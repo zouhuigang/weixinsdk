@@ -5,6 +5,7 @@ import (
 	"log"
 
 	zconfig "weixinsdk/src/config"
+	zstorage "weixinsdk/src/storage"
 )
 
 func init() {
@@ -17,9 +18,23 @@ func init() {
 
 func main() {
 
-	value, err := zconfig.CFG.GetValue("SERVICE", "TEST")
-	if err != nil {
-		log.Fatalf("无法获取键值（%s）：%s", "key_default", err)
+	storage_type := zconfig.CFG.MustValue("parameter", "storage_type", "local")
+	exporter := zstorage.ExporterMap()[storage_type]
+
+	var ok bool
+	var storageInterface zstorage.Exporter
+	storageInterface, ok = exporter.(zstorage.Exporter)
+	if !ok {
+		log.Fatalf("storage init fail")
+		return
 	}
-	fmt.Println(value)
+	err := storageInterface.New()
+	if err != nil {
+		log.Fatalf("storage new fail:%s", err)
+		return
+	}
+
+	fmt.Println("==========", storageInterface.Get("weixin_dev"), ok)
+
+	fmt.Println("success", storage_type)
 }
