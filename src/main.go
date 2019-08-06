@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	zcache "weixinsdk/src/cache"
 	zconfig "weixinsdk/src/config"
 	zstorage "weixinsdk/src/storage"
 )
@@ -14,27 +15,22 @@ func init() {
 	if err != nil {
 		log.Fatalf("加载配置文件失败:%s", err)
 	}
+
+	//初始化存储引擎
+	err = zstorage.Load()
+	if err != nil {
+		log.Fatalf("存储初始化失败:%s", err)
+	}
+
 }
 
 func main() {
 
-	storage_type := zconfig.CFG.MustValue("parameter", "storage_type", "local")
-	exporter := zstorage.ExporterMap()[storage_type]
+	//测试access_token
+	//zcache.GetAccessToken()
 
-	var ok bool
-	var storageInterface zstorage.Exporter
-	storageInterface, ok = exporter.(zstorage.Exporter)
-	if !ok {
-		log.Fatalf("storage init fail")
-		return
-	}
-	err := storageInterface.New()
-	if err != nil {
-		log.Fatalf("storage new fail:%s", err)
-		return
-	}
+	//测试jsapi_ticket
+	dat := zcache.GetJsapiTicket()
 
-	fmt.Println("==========", storageInterface.Get("weixin_dev"), ok)
-
-	fmt.Println("success", storage_type)
+	fmt.Printf("dat:%s\n", dat)
 }

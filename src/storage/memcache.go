@@ -28,9 +28,9 @@ func (this *Zmemcache) Add() error {
 	return nil
 }
 
-func (this *Zmemcache) Set() error {
-	this.mc.Set(&memcache.Item{Key: "weixin_dev", Value: []byte("my sdsasdsa")})
-	return nil
+//默认0代表无有效期，实际上是30天
+func (this *Zmemcache) Set(m_key string, m_value string, m_expiration int32) error {
+	return this.mc.Set(&memcache.Item{Key: m_key, Value: []byte(m_value), Expiration: m_expiration})
 }
 
 func (this *Zmemcache) Delete() error {
