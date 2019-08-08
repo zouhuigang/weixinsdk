@@ -8,6 +8,68 @@
 
 
 
+对应关系:
+
+
+golang server:
+
+	transportFactory := thrift.NewTFramedTransportFactory(thrift.NewTTransportFactory())
+    //transportFactory := thrift.NewTBufferedTransportFactory(10000000)
+	protocolFactory := thrift.NewTBinaryProtocolFactoryDefault()
+
+python client:
+
+    transport = TSocket.TSocket('192.168.0.1', 9998)
+    //transport = TTransport.TBufferedTransport(transport)
+	transport = TTransport.TFramedTransport(transport)
+    protocol = TBinaryProtocol.TBinaryProtocol(transport)
+
+
+php client:
+
+	$socket = new TSocket('127.0.0.1','9998');  
+	$socket->setSendTimeout(10000);
+	$socket->setRecvTimeout(20000);
+	//$transport = new TBufferedTransport($socket);
+	$transport = new TFramedTransport($socket); 
+	$protocol = new TBinaryProtocol($transport);
+
+
+
+### 问题
+
+
+Q:
+
+	2019/08/07 17:18:26 error processing request: Incorrect frame size (2147549185)
+
+
+A:
+
+传输方式：这个要和服务器使用的一致，注意
+
+	transportFactory := thrift.NewTBufferedTransportFactory(10000000)
+
+这可能有不同的选项，大部分参考代码中给的都是
+
+	transportFactory := thrift.NewTFramedTransportFactory(thrift.NewTTransportFactory())
+
+客户端连接时候一定要与此对应。
+
+
+
+
+
+
+
+
+
+### 参阅文档
+
+[http://www.zhongruitech.com/4004855601.html](http://www.zhongruitech.com/4004855601.html)
+
+[https://blog.csdn.net/liuxinmingcode/article/details/45696237](https://blog.csdn.net/liuxinmingcode/article/details/45696237)
+
 
 
 

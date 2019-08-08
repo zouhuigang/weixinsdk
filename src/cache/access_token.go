@@ -45,7 +45,7 @@ var MyAccessToken structure.AccessToken
 const m_ACCESS_TOKEN_KEY = `weixin_service_access_token`
 
 //有效期，秒
-const m_ACCESS_TOKEN_EXPIRES = 1200
+const m_ACCESS_TOKEN_EXPIRES = 7200
 
 //得到token
 func GetAccessToken() string {

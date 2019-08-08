@@ -19,7 +19,7 @@ type Exporter interface {
 func ExporterMap() (m map[string]interface{}) {
 	m = map[string]interface{}{
 		"memcache": new(Zmemcache),
-		"local":    new(Zmemcache),
+		"local":    new(Zlocal),
 		"redis":    new(Zredis),
 	}
 	return

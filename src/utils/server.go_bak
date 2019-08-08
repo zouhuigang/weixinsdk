@@ -1,0 +1,103 @@
+package utils
+
+import (
+	"fmt"
+	"log"
+	"os/exec"
+	"strconv"
+	"strings"
+
+	"git.apache.org/thrift.git/lib/go/thrift"
+	"github.com/hprose/hprose-golang/rpc"
+)
+
+func StartService(port int) (bool, string, *rpc.TCPServer) {
+	command := fmt.Sprintf(`netstat -tlnp | grep %d| awk '{print $7}'`, port)
+	cmd := exec.Command("/bin/bash", "-c", command)
+	if out, err := cmd.Output(); err != nil {
+		return false, err.Error(), nil
+	} else {
+		//如果端口冲突，则直接关闭不好，还是直接弹出消息吧
+		id := strings.Split(string(out), "/")[0]
+		// command = `kill -9 ` + id
+		// cmd = exec.Command("/bin/bash", "-c",command)
+		// if _, err := cmd.Output(); err != nil {
+		//     return false
+		// }
+		idInt, _ := strconv.Atoi(id)
+		if idInt > 0 {
+			msg := fmt.Sprintf("端口冲突,请先确保不会影响其他服务，然后使用kill -9 %d 关闭端口", idInt)
+			return false, msg, nil
+		} else {
+			tcpUrl := fmt.Sprintf("tcp4://0.0.0.0:%d", port)
+			service := rpc.NewTCPServer(tcpUrl)
+			return true, "启动成功", service
+		}
+
+	}
+
+}
+
+func StartHttpService(port int) (bool, string, *rpc.HTTPService) {
+	command := fmt.Sprintf(`netstat -tlnp | grep %d| awk '{print $7}'`, port)
+	cmd := exec.Command("/bin/bash", "-c", command)
+	if out, err := cmd.Output(); err != nil {
+		return false, err.Error(), nil
+	} else {
+		//如果端口冲突，则直接关闭不好，还是直接弹出消息吧
+		id := strings.Split(string(out), "/")[0]
+		// command = `kill -9 ` + id
+		// cmd = exec.Command("/bin/bash", "-c",command)
+		// if _, err := cmd.Output(); err != nil {
+		//     return false
+		// }
+		idInt, _ := strconv.Atoi(id)
+		if idInt > 0 {
+			msg := fmt.Sprintf("端口冲突,请先确保不会影响其他服务，然后使用kill -9 %d 关闭端口", idInt)
+			return false, msg, nil
+		} else {
+			service := rpc.NewHTTPService()
+			return true, "启动成功", service
+		}
+
+	}
+
+}
+
+//thrift服务
+func StartServerThrift(port int) (bool, string, *rpc.TCPServer) {
+
+	command := fmt.Sprintf(`netstat -tlnp | grep %d| awk '{print $7}'`, port)
+	cmd := exec.Command("/bin/bash", "-c", command)
+	if out, err := cmd.Output(); err != nil {
+		return false, err.Error(), nil
+	} else {
+		//如果端口冲突，则直接关闭不好，还是直接弹出消息吧
+		id := strings.Split(string(out), "/")[0]
+		// command = `kill -9 ` + id
+		// cmd = exec.Command("/bin/bash", "-c",command)
+		// if _, err := cmd.Output(); err != nil {
+		//     return false
+		// }
+		idInt, _ := strconv.Atoi(id)
+		if idInt > 0 {
+			msg := fmt.Sprintf("端口冲突,请先确保不会影响其他服务，然后使用kill -9 %d 关闭端口", idInt)
+			return false, msg, nil
+		} else {
+			tcpUrl := fmt.Sprintf("0.0.0.0:%d", port)
+			serverTransport, err := thrift.NewTServerSocket(tcpUrl)
+			if err != nil {
+				log.Fatalln("Error:", err)
+			}
+			transportFactory := thrift.NewTFramedTransportFactory(thrift.NewTTransportFactory())
+			protocolFactory := thrift.NewTBinaryProtocolFactoryDefault()
+
+			server := thrift.NewTSimpleServer4(processor, serverTransport, transportFactory, protocolFactory)
+			server.Serve()
+
+			return true, "启动成功", service
+		}
+
+	}
+
+}

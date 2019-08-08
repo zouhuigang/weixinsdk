@@ -30,7 +30,7 @@ var MyJsapiTicket structure.JsapiTicket
 const m_JSAPI_TICKET_KEY = `weixin_service_jsapi_ticket`
 
 //有效期，秒
-const m_JSAPI_TICKET_EXPIRES = 1200
+const m_JSAPI_TICKET_EXPIRES = 7200
 
 //得到token
 func GetJsapiTicket() string {

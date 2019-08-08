@@ -1,4 +1,4 @@
-package cache
+package utils
 
 import (
 	"bytes"
@@ -51,11 +51,11 @@ func createLinkString(keys []string, args map[string]string) string {
 
 //签名,微信调试签名https://mp.weixin.qq.com/debug/cgi-bin/sandbox?t=jsapisign
 //微信的签名函数sha1(string1)是php版的,可能会跟其他语言不一样
-func Signature(args map[string]string) {
+func Signature(args map[string]string) string {
 	keys := paraFilter(args)
 	signStr := createLinkString(keys, args)
 	sign := zcrypto.PhpSha1(signStr)
-	args["sign"] = sign
+	return sign
 }
 
 func checkErr(err error) {
