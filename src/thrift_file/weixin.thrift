@@ -11,9 +11,20 @@ struct Article{
  4: string author,
 }
 
+struct JsapiSignData{
+    1: string jsapi_ticket,
+    2: string noncestr,
+    3:i64 timestamp,
+    4: string url,
+    5: string sign,
+    6: string appid,
+}
+
 const map<string,string> MAPCONSTANT = {'hello':'world', 'goodnight':'moon'}
 
-service WxServiceThrift {        
+//微信服务号接口
+service WxServiceThrift{        
         list<string> CallBack(1:i64 callTime, 2:string name, 3:map<string, string> paramMap),
         void put(1: Article newArticle),
+        JsapiSignData JsapiSign(1:string url)
 }

@@ -29,8 +29,11 @@ def run():
         s.title = "插入一篇测试文章"
         s.content = "我就是这篇文章内容"
         s.author = "zouhuigang"
-        client.put(s)
-        print("success")
+        #client.put(s)
+
+        #微信扫一扫
+        dat=client.JsapiSign("http://c3.ab.51tywy.com/qrcode/test/test.html")
+        print("success",dat)
         transport.close()
     except Thrift.TException as ex:
         print("%s" % (ex.message))

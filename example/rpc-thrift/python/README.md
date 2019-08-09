@@ -11,8 +11,10 @@ windows:
 
 激活:
 	
-	cd venv
-	Scripts/activate.bat
+	cd venv/Scripts/
+	activate.bat
 
 
-	
+运行:
+
+	python3 demo.py

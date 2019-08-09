@@ -1,6 +1,11 @@
 ### 微信公众平台/微信小程序/服务号/订阅号
 
 
+### 本地测试
+
+	需要将外网的ip添加进白名单（开发->基本配置->ip白名单）
+
+
 由于切换各种语言写代码时，每次都要重新开发一遍微信这类的接口，感觉非常的麻烦，所以写了这个库，统一下，封装成so或rpc的形式，供其他语言调用。
 
 
@@ -69,6 +74,8 @@ A:
 [http://www.zhongruitech.com/4004855601.html](http://www.zhongruitech.com/4004855601.html)
 
 [https://blog.csdn.net/liuxinmingcode/article/details/45696237](https://blog.csdn.net/liuxinmingcode/article/details/45696237)
+
+[https://studygolang.com/articles/13988](https://studygolang.com/articles/13988)
 
 
 

@@ -3,4 +3,4 @@ example/rpc-thrift/python/venv/*
 src/thrift_file/gen-go/
 src/thrift_file/gen-php/
 src/thrift_file/gen-py/
-*.db
+src/weixin\.db

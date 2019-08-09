@@ -23,6 +23,7 @@ https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	zconfig "weixinsdk/src/config"
 	zstorage "weixinsdk/src/storage"
@@ -48,68 +49,79 @@ const m_ACCESS_TOKEN_KEY = `weixin_service_access_token`
 const m_ACCESS_TOKEN_EXPIRES = 7200
 
 //得到token
-func GetAccessToken() string {
-
+func GetAccessToken() (string, error) {
+	var err error
 	if zreg.IsNull(MyAccessToken.Access_token) { //如果token为空，则重新获取
-		MyAccessToken = initAccessToken()
+		MyAccessToken, err = initAccessToken()
 	} else if (MyAccessToken.NowTimeStamp + MyAccessToken.Expires_in + 1200) >= ztime.NowTimeStamp() { //如果到了有效期前20分钟，则重新获取
-		MyAccessToken = initAccessToken()
+		MyAccessToken, err = initAccessToken()
 	}
 
-	return MyAccessToken.Access_token
+	return MyAccessToken.Access_token, err
 }
 
-func initAccessToken() structure.AccessToken {
+func initAccessToken() (structure.AccessToken, error) {
 
 	//读取storage中的数据
 	m_storage_json := zstorage.MyStorage.Get(m_ACCESS_TOKEN_KEY)
 	token := structure.AccessToken{}
 
 	if zreg.IsNull(m_storage_json) {
-		fmt.Println("weixin server get access_token \n")
 		var m_AppSecret string = zconfig.CFG.MustValue("service", "AppSecret", "")
 		var m_AppID string = zconfig.CFG.MustValue("service", "AppID", "")
 		requrl := fmt.Sprintf("%s&appid=%s&secret=%s", zconfig.SERVICE_APIURL_ACCESS_TOKEN, m_AppID, m_AppSecret)
 		json_str := zhttp.HttpGet(requrl)
 		m := make(map[string]interface{})
 		if err := json.Unmarshal([]byte(json_str), &m); err != nil {
-			fmt.Println(err)
+			//fmt.Println(err)
+			return token, err
 		}
 
 		if err := mapstructure.Decode(m, &token); err != nil {
-			fmt.Println(err)
+			//fmt.Println(err)
+			return token, err
+		}
+
+		if token.Errcode != 0 {
+			wxMsg := fmt.Sprintf("Errcode:%d,Errmsg:%s", token.Errcode, token.Errmsg)
+			return token, errors.New(wxMsg)
 		}
 
 		//存储
 		token.NowTimeStamp = ztime.NowTimeStamp()
 		tokenJson, err := json.Marshal(token)
 		if err != nil {
-			fmt.Println("access_token json字符串错误")
+			//fmt.Println("access_token json字符串错误")
+			return token, errors.New("access_token json字符串错误")
 		}
 
 		if !zreg.IsNull(token.Access_token) {
 			err := zstorage.MyStorage.Set(m_ACCESS_TOKEN_KEY, string(tokenJson), m_ACCESS_TOKEN_EXPIRES)
 			if err != nil {
-				fmt.Println("storage fail")
+				//fmt.Println("storage fail")
+				return token, errors.New("storage fail")
 			}
 
 		}
 
-		return token
+		fmt.Printf("weixin server get access_token: %s \n", string(tokenJson))
+
+		return token, nil
 
 	} else {
-		fmt.Println("storage server  get access_token \n")
+		fmt.Printf("storage server  get access_token: %s \n", m_storage_json)
 		var json = jsoniter.ConfigCompatibleWithStandardLibrary
 		json.Unmarshal([]byte(m_storage_json), &token)
 	}
 
-	return token
+	return token, nil
 
 }
 
 //被动刷新access_token
-func getNewAccessToken() string {
+func getNewAccessToken() (string, error) {
+	var err error
 	MyAccessToken = structure.AccessToken{}
-	MyAccessToken = initAccessToken()
-	return MyAccessToken.Access_token
+	MyAccessToken, err = initAccessToken()
+	return MyAccessToken.Access_token, err
 }

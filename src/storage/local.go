@@ -59,9 +59,12 @@ func (this *Zlocal) Get(key string) string {
 	this.conn()
 	defer this.close()
 
-	value, err := this.mc.GetBytes(bucketName, key)
+	// value, err := this.mc.GetBytes(bucketName, key)
+	var value string
+	err := this.mc.Get(bucketName, key, &value)
 	if err != nil {
 		return ""
 	}
-	return string(value)
+	//fmt.Println("===========", value)
+	return value
 }

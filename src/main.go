@@ -8,7 +8,7 @@ import (
 	zstorage "weixinsdk/src/storage"
 	z_weixin_service "weixinsdk/src/thrift_file/gen-go/weixin/service" //注意导入Thrift生成的接口包
 	//zutils "weixinsdk/src/utils"
-	"weixinsdk/src/core"
+	"weixinsdk/src/core/service"
 
 	"git.apache.org/thrift.git/lib/go/thrift"
 )
@@ -66,7 +66,7 @@ func main() {
 	transportFactory := thrift.NewTFramedTransportFactory(thrift.NewTTransportFactory())
 	//transportFactory := thrift.NewTBufferedTransportFactory(10000000)
 
-	// 传输协议:二进制格式
+	// 传输协议:二进制格式binary|json|simplejson|compact
 	protocolFactory := thrift.NewTBinaryProtocolFactoryDefault()
 
 	serverTransport, err := thrift.NewTServerSocket(ipser)
@@ -75,7 +75,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	handler := &core.WxServiceThrift{}
+	handler := &service.WxServiceThrift{}
 	processor := z_weixin_service.NewWxServiceThriftProcessor(handler)
 
 	server := thrift.NewTSimpleServer4(processor, serverTransport, transportFactory, protocolFactory)
