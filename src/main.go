@@ -9,13 +9,21 @@ import (
 	z_weixin_service "weixinsdk/src/thrift_file/gen-go/weixin/service" //注意导入Thrift生成的接口包
 	//zutils "weixinsdk/src/utils"
 	"weixinsdk/src/core/service"
+	"weixinsdk/src/logger"
 
 	"git.apache.org/thrift.git/lib/go/thrift"
+	//"github.com/sirupsen/logrus"
 )
 
 func init() {
 	//加载全局配置
 	err := zconfig.Load("/build/base.env.ini", "/build/dev.env.ini")
+	if err != nil {
+		log.Fatalf("加载配置文件失败:%s", err)
+	}
+
+	//加载日志
+	err = logger.Load()
 	if err != nil {
 		log.Fatalf("加载配置文件失败:%s", err)
 	}
@@ -29,17 +37,27 @@ func init() {
 }
 
 func main2() {
-	err := zstorage.MyStorage.Set("weixin_service_access_token", `{
-		"realname": "邹慧刚",
-		"mobile": 18117000088,
-		"sex": "F"
-	}`, 120)
-	if err != nil {
-		fmt.Println("storage fail", err.Error())
-	}
+	// err := zstorage.MyStorage.Set("weixin_service_access_token", `{
+	// 	"realname": "邹慧刚",
+	// 	"mobile": 18117000088,
+	// 	"sex": "F"
+	// }`, 120)
+	// if err != nil {
+	// 	fmt.Println("storage fail", err.Error())
+	// }
 
-	dat := zstorage.MyStorage.Get("weixin_service_access_token")
-	fmt.Printf("%s\n", dat)
+	// dat := zstorage.MyStorage.Get("weixin_service_access_token")
+	// fmt.Printf("%s\n", dat)
+
+	//=====
+	// 24小时一个日志文件，最多存365天的日志文件。 再多了就删掉
+
+	// for {
+	// 	time.Sleep(time.Second * 3)
+	// 	logger.MyLogger.Info("asdsadasdsad ")
+	// 	logger.MyLogger.Errorf("=====================")
+	// }
+	logger.MyLogger.Info("success ")
 }
 
 func main() {
@@ -60,6 +78,14 @@ func main() {
 	// } else {
 	// 	fmt.Printf("v%s启动成功[TCP4]，调用密码为:%s,端口为:%d\n", "1.0.0", "", port)
 	// }
+
+	logger.MyLogger.Info("info")
+	logger.MyLogger.Error("error")
+	logger.MyLogger.Warn("warn")
+	logger.MyLogger.Debug("debug")
+	logger.MyLogger.Trace("trace")
+	//logger.MyLogger.Fatal("fatal")
+	logger.MyLogger.Panic("panic")
 
 	ipser := `0.0.0.0:3333`
 	// 传输器,传输方式

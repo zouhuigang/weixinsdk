@@ -31,9 +31,16 @@ def run():
         s.author = "zouhuigang"
         #client.put(s)
 
+        #access_token
+        #access_token=client.GetAccessToken()
+
+        #jsapi_ticket
+        #ticket=client.GetJsapiTicket()
+        #print("access_token:%s,ticket:%s"%(access_token,ticket))
+
         #微信扫一扫
         dat=client.JsapiSign("http://c3.ab.51tywy.com/qrcode/test/test.html")
-        print("success",dat)
+        print("JsapiSign",dat)
         transport.close()
     except Thrift.TException as ex:
         print("%s" % (ex.message))

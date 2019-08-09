@@ -26,5 +26,9 @@ const map<string,string> MAPCONSTANT = {'hello':'world', 'goodnight':'moon'}
 service WxServiceThrift{        
         list<string> CallBack(1:i64 callTime, 2:string name, 3:map<string, string> paramMap),
         void put(1: Article newArticle),
+        //获取全局access_token
+        string GetAccessToken(),
+        //获取jsapi_ticket
+        string GetJsapiTicket(),
         JsapiSignData JsapiSign(1:string url)
 }

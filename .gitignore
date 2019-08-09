@@ -4,3 +4,7 @@ src/thrift_file/gen-go/
 src/thrift_file/gen-php/
 src/thrift_file/gen-py/
 src/weixin\.db
+
+src/vendor/
+
+src/log/

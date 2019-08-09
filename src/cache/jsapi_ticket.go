@@ -11,17 +11,16 @@ import (
 	"errors"
 	"fmt"
 	zconfig "weixinsdk/src/config"
+	"weixinsdk/src/logger"
 	zstorage "weixinsdk/src/storage"
 
 	"weixinsdk/src/structure"
+	"weixinsdk/src/utils"
 
 	"github.com/zouhuigang/mapstructure"
 	"github.com/zouhuigang/package/zhttp"
 	"github.com/zouhuigang/package/zreg"
 	"github.com/zouhuigang/package/ztime"
-	// json数据解析包，其转化效率比官方自带的encoding/json包高
-	// 建议使用该包进行json对象的处理
-	jsoniter "github.com/json-iterator/go"
 )
 
 //全局结构体
@@ -39,9 +38,7 @@ const m_JSAPI_TICKET_EXPIRES = 7200
 //得到token
 func GetJsapiTicket() (string, error) {
 
-	if zreg.IsNull(MyJsapiTicket.Ticket) { //如果Ticket为空，则重新获取
-		MyJsapiTicket, err = initJsapiTicket()
-	} else if (MyJsapiTicket.NowTimeStamp + MyJsapiTicket.Expires_in + 1200) >= ztime.NowTimeStamp() { //如果到了有效期前20分钟，则重新获取
+	if !utils.CacheValid(MyJsapiTicket.Ticket, MyJsapiTicket.NowTimeStamp, MyJsapiTicket.Expires_in, 1200, "GetJsapiTicket") {
 		MyJsapiTicket, err = initJsapiTicket()
 	}
 
@@ -51,11 +48,15 @@ func GetJsapiTicket() (string, error) {
 func initJsapiTicket() (structure.JsapiTicket, error) {
 
 	//读取storage中的数据
-	m_storage_json := zstorage.MyStorage.Get(m_JSAPI_TICKET_KEY)
 	token := structure.JsapiTicket{}
+	err := utils.GetCacheFromStorageWithUnmarshal(m_JSAPI_TICKET_KEY, &token)
+	if err != nil {
+		logger.MyLogger.Errorf(err.Error())
+		return token, err
+	}
 
-	if zreg.IsNull(m_storage_json) {
-		fmt.Println("weixin server get jsapi_ticket \n")
+	if !utils.CacheValid(token.Ticket, token.NowTimeStamp, token.Expires_in, 1200, "initJsapiTicket") {
+		logger.MyLogger.Info("weixin server get jsapi_ticket \n")
 		access_token, err := GetAccessToken()
 		if err != nil {
 			return token, err
@@ -92,13 +93,7 @@ func initJsapiTicket() (structure.JsapiTicket, error) {
 		}
 
 		return token, nil
-
-	} else {
-		fmt.Printf("storage server  get jsapi_ticket: %s \n", m_storage_json)
-		var json = jsoniter.ConfigCompatibleWithStandardLibrary
-		json.Unmarshal([]byte(m_storage_json), &token)
 	}
-	fmt.Println(token.Ticket)
 	return token, nil
 
 }
