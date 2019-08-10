@@ -2,6 +2,7 @@ package utils
 
 import (
 	"errors"
+	"fmt"
 	"weixinsdk/src/logger"
 	zstorage "weixinsdk/src/storage"
 
@@ -26,15 +27,20 @@ func CacheValid(myToken string, myNowTimeStamp int64, myExpiresIn int64, advance
 		advanceTime = 1200
 	}
 
+	timestamp := ztime.NowTimeStamp()
+	cache_timestamp := myNowTimeStamp + myExpiresIn - advanceTime
+
 	if zreg.IsNull(myToken) { //如果Ticket为空，则重新获取
 		valid = false
-		logger.MyLogger.Info("token is null")
-	} else if (myNowTimeStamp + myExpiresIn + advanceTime) >= ztime.NowTimeStamp() { //如果到了有效期前20分钟，则重新获取
+		logger.MyLogger.Debug("token is null,source:", source)
+	} else if cache_timestamp <= timestamp { //如果到了有效期前20分钟，则重新获取
 		valid = false
-		logger.MyLogger.Info("cache is not valid")
+		logger.MyLogger.Debug("cache is not valid,source:", source)
+	} else {
+		lg := fmt.Sprintf("storage server,source:%s,cur_timestamp:%d,timestamp:%d", source, cache_timestamp, timestamp)
+		logger.MyLogger.Debug(lg)
 	}
 
-	logger.MyLogger.Info("cache is  valid")
 	return
 }
 

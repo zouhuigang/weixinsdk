@@ -6,6 +6,11 @@
 	需要将外网的ip添加进白名单（开发->基本配置->ip白名单）
 
 
+### 微信公众号测试账号申请
+
+[http://mp.weixin.qq.com/debug/cgi-bin/sandbox?t=sandbox/login](http://mp.weixin.qq.com/debug/cgi-bin/sandbox?t=sandbox/login)
+
+
 由于切换各种语言写代码时，每次都要重新开发一遍微信这类的接口，感觉非常的麻烦，所以写了这个库，统一下，封装成so或rpc的形式，供其他语言调用。
 
 

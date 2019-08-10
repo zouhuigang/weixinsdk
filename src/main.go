@@ -17,7 +17,7 @@ import (
 
 func init() {
 	//加载全局配置
-	err := zconfig.Load("/build/base.env.ini", "/build/dev.env.ini")
+	err := zconfig.Load()
 	if err != nil {
 		log.Fatalf("加载配置文件失败:%s", err)
 	}
@@ -79,14 +79,6 @@ func main() {
 	// 	fmt.Printf("v%s启动成功[TCP4]，调用密码为:%s,端口为:%d\n", "1.0.0", "", port)
 	// }
 
-	logger.MyLogger.Info("info")
-	logger.MyLogger.Error("error")
-	logger.MyLogger.Warn("warn")
-	logger.MyLogger.Debug("debug")
-	logger.MyLogger.Trace("trace")
-	//logger.MyLogger.Fatal("fatal")
-	logger.MyLogger.Panic("panic")
-
 	ipser := `0.0.0.0:3333`
 	// 传输器,传输方式
 	transportFactory := thrift.NewTFramedTransportFactory(thrift.NewTTransportFactory())
@@ -105,7 +97,9 @@ func main() {
 	processor := z_weixin_service.NewWxServiceThriftProcessor(handler)
 
 	server := thrift.NewTSimpleServer4(processor, serverTransport, transportFactory, protocolFactory)
-	fmt.Printf("thrift server in %s\n", ipser)
+
+	env := zconfig.CFG.MustValue("parameter", "env", "")
+	logger.MyLogger.Info("weixin core start success,server:", ipser, ",env:", env)
 	server.Serve()
 
 }

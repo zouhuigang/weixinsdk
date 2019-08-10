@@ -26,7 +26,9 @@ import (
 	"errors"
 	"fmt"
 	zconfig "weixinsdk/src/config"
+	"weixinsdk/src/logger"
 	zstorage "weixinsdk/src/storage"
+	"weixinsdk/src/utils"
 
 	"weixinsdk/src/structure"
 
@@ -36,11 +38,13 @@ import (
 	"github.com/zouhuigang/package/ztime"
 	// json数据解析包，其转化效率比官方自带的encoding/json包高
 	// 建议使用该包进行json对象的处理
-	jsoniter "github.com/json-iterator/go"
 )
 
 //全局结构体
-var MyAccessToken structure.AccessToken
+var (
+	MyAccessToken structure.AccessToken
+	err           error
+)
 
 //存储中的key值
 const m_ACCESS_TOKEN_KEY = `weixin_service_access_token`
@@ -50,10 +54,8 @@ const m_ACCESS_TOKEN_EXPIRES = 7200
 
 //得到token
 func GetAccessToken() (string, error) {
-	var err error
-	if zreg.IsNull(MyAccessToken.Access_token) { //如果token为空，则重新获取
-		MyAccessToken, err = initAccessToken()
-	} else if (MyAccessToken.NowTimeStamp + MyAccessToken.Expires_in + 1200) >= ztime.NowTimeStamp() { //如果到了有效期前20分钟，则重新获取
+
+	if !utils.CacheValid(MyAccessToken.Access_token, MyAccessToken.NowTimeStamp, MyAccessToken.Expires_in, 1200, "GetAccessToken") {
 		MyAccessToken, err = initAccessToken()
 	}
 
@@ -63,10 +65,15 @@ func GetAccessToken() (string, error) {
 func initAccessToken() (structure.AccessToken, error) {
 
 	//读取storage中的数据
-	m_storage_json := zstorage.MyStorage.Get(m_ACCESS_TOKEN_KEY)
 	token := structure.AccessToken{}
 
-	if zreg.IsNull(m_storage_json) {
+	err := utils.GetCacheFromStorageWithUnmarshal(m_ACCESS_TOKEN_KEY, &token)
+	if err != nil {
+		logger.MyLogger.Errorf(err.Error())
+		return token, err
+	}
+
+	if !utils.CacheValid(token.Access_token, token.NowTimeStamp, token.Expires_in, 1200, "initAccessToken") {
 		var m_AppSecret string = zconfig.CFG.MustValue("service", "AppSecret", "")
 		var m_AppID string = zconfig.CFG.MustValue("service", "AppID", "")
 		requrl := fmt.Sprintf("%s&appid=%s&secret=%s", zconfig.SERVICE_APIURL_ACCESS_TOKEN, m_AppID, m_AppSecret)
@@ -108,10 +115,6 @@ func initAccessToken() (structure.AccessToken, error) {
 
 		return token, nil
 
-	} else {
-		fmt.Printf("storage server  get access_token: %s \n", m_storage_json)
-		var json = jsoniter.ConfigCompatibleWithStandardLibrary
-		json.Unmarshal([]byte(m_storage_json), &token)
 	}
 
 	return token, nil

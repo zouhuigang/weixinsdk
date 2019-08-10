@@ -34,6 +34,15 @@ InfoLevel
 DebugLevel
 // TraceLevel level. Designates finer-grained informational events than the Debug.
 TraceLevel
+
+
+logger.MyLogger.Trace("trace")
+logger.MyLogger.Debug("debug")
+logger.MyLogger.Info("info")
+logger.MyLogger.Warn("warn")
+logger.MyLogger.Error("error")
+logger.MyLogger.Fatal("fatal")
+logger.MyLogger.Panic("panic")
 */
 
 var MyLogger *logrus.Logger

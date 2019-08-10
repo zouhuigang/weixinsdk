@@ -26,7 +26,6 @@ import (
 //全局结构体
 var (
 	MyJsapiTicket structure.JsapiTicket
-	err           error
 )
 
 //存储中的key值
