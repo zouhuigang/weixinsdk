@@ -36,3 +36,32 @@
 		sign='5da1e238185fdfd5925d1a731c789a8f0f7da93f', 
 		appid='wx5f00c646abe6af91'
 	)
+
+
+### message callback url
+
+请求路径相同，但请求方式不同，一个是GET方式一个是POST方式
+
+
+	 msg="IsWeixinServer get data:weixin-2393786718754963324-bd816b7b28ebd41b1125ee0a71cb1e95be8ccae8-1565490724-1004712460"
+
+url:
+
+	http://9cwfts.natappfree.cc/weixin/callback?echostr=2393786718754963324&signature=bd816b7b28ebd41b1125ee0a71cb1e95be8ccae8&timestamp=1565490724&nonce=1004712460
+
+
+code:
+
+	wxServerClient := utils.GetWxServerClient()
+	wx, err := wxServerClient.IsWeixinServer(token, echostr, signature, timestamp, nonce)
+	if err != nil {
+
+	}
+	if !wx.IsServer {
+		return ctx.String(http.StatusOK, "验证失败")
+	}
+	//验证成功，原样返回echostr
+	return ctx.String(http.StatusOK, wx.Echostr)
+
+
+### send message

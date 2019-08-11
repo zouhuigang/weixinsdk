@@ -1,5 +1,7 @@
 ### 微信公众平台/微信小程序/服务号/订阅号
 
+>由于切换各种语言写代码时，每次都要重新开发一遍微信这类的接口，感觉非常的麻烦，所以写了这个库，统一下，封装成so或rpc的形式，供其他语言调用。
+
 
 ### 本地测试
 
@@ -11,10 +13,33 @@
 [http://mp.weixin.qq.com/debug/cgi-bin/sandbox?t=sandbox/login](http://mp.weixin.qq.com/debug/cgi-bin/sandbox?t=sandbox/login)
 
 
-由于切换各种语言写代码时，每次都要重新开发一遍微信这类的接口，感觉非常的麻烦，所以写了这个库，统一下，封装成so或rpc的形式，供其他语言调用。
+测试url:
+
+	http://594ahg.natappfree.cc/weixin/callback
+
+token:
+
+	weixin
 
 
-    go get -u github.com/FiloSottile/gvt
+### 搭建微信本地调试环境
+
+国内一家较好的服务商[natapp](https://natapp.cn)。注册后下载对应的客户端，然后在其对应的目录下创建 config.ini 文件：
+
+	[default]
+	authtoken=                      # 对应一条隧道的authtoken
+	clienttoken=                    # 对应客户端的clienttoken,将会忽略authtoken,若无请留空,
+	log=none                        # log 日志文件,可指定本地文件, none=不做记录,stdout=直接屏幕输出 ,默认为none
+	loglevel=ERROR                  # 日志等级 DEBUG, INFO, WARNING, ERROR 默认为 DEBUG
+	http_proxy=                     # 代理设置 如 http://10.123.10.10:3128 非代理上网用户请务必留空
+
+
+
+参考:
+
+[https://blog.csdn.net/qq_34096082/article/details/79985141](https://blog.csdn.net/qq_34096082/article/details/79985141)
+
+
 
 
 

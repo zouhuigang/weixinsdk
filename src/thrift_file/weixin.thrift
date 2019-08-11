@@ -20,6 +20,11 @@ struct JsapiSignData{
     6: string appid,
 }
 
+struct IsWeixinServerData{
+    1:bool is_server
+    2:string echostr
+}
+
 const map<string,string> MAPCONSTANT = {'hello':'world', 'goodnight':'moon'}
 
 //微信服务号接口
@@ -31,4 +36,6 @@ service WxServiceThrift{
         //获取jsapi_ticket
         string GetJsapiTicket(),
         JsapiSignData JsapiSign(1:string url)
+        //是微信服务器过来的请求，用来验证消息回调
+        IsWeixinServerData IsWeixinServer(1:string token, 2:string echostr, 3:string signature, 4:string  timestamp, 5:string  nonce)
 }

@@ -73,7 +73,7 @@ func main() {
 
 	// is_success, msg, service := zutils.StartServerThrift(port)
 	// if !is_success {
-	// 	fmt.Printf("%s\n", msg)
+	// 	fmt.Printf("%s\n", msg)protocolFactory
 	// 	os.Exit(3)
 	// } else {
 	// 	fmt.Printf("v%s启动成功[TCP4]，调用密码为:%s,端口为:%d\n", "1.0.0", "", port)
