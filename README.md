@@ -43,6 +43,43 @@ token:
 
 
 
+### 测试模板消息
+
+模板标题:
+
+	测试模板
+
+模板内容:
+
+
+	{{content.DATA}}
+	{{note.DATA}}
+	{{translation.DATA}}
+
+
+小程序真实的是详细内容：
+
+
+	充值结果{{keyword1.DATA}}
+	电表号{{keyword2.DATA}}
+	单号{{keyword3.DATA}}
+	金额{{keyword4.DATA}}
+	充值金额{{keyword5.DATA}}
+	充值时间{{keyword6.DATA}}
+
+
+服务号模板消息,详细内容:
+
+	{{first.DATA}}
+	监控主机：{{keyword1.DATA}}
+	警告时间：{{keyword2.DATA}}
+	服务名称：{{keyword3.DATA}}
+	警告事件：{{keyword4.DATA}}
+	警告描述：{{keyword5.DATA}}
+	{{remark.DATA}}
+
+
+
 对应关系:
 
 

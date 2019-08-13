@@ -1,5 +1,6 @@
 package utils
 
+//https://github.com/DrWrong/tantan_demo/blob/ec2e860223cc3823e5513e955d465c5ebab5e33a/src/github.com/DrWrong/monica/thriftext/thrift_client_pool.go
 //https://blog.csdn.net/u011142688/article/details/79506351
 //https://github.com/adolphlxm/atc/blob/master/pool/pool.go
 //https://blog.csdn.net/liuxinmingcode/article/details/78293146
