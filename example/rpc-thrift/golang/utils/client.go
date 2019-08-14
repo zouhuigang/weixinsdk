@@ -18,7 +18,7 @@ const (
 	PORT = "3333"
 )
 
-func GetWxServerClient() *z_weixin_service.WxServiceThriftClient {
+func GetWxServerClient() (*z_weixin_service.WxServiceThriftClient, *thrift.TSocket) {
 
 	transportFactory := thrift.NewTFramedTransportFactory(thrift.NewTTransportFactory())
 	protocolFactory := thrift.NewTBinaryProtocolFactoryDefault()
@@ -37,7 +37,7 @@ func GetWxServerClient() *z_weixin_service.WxServiceThriftClient {
 	}
 	//defer transport.Close()
 
-	return client
+	return client, transport
 }
 
 // func GetArticleClient(host, port string, initialCap, maxCap int, timeout time.Duration) *articles.ArticleServiceClient {

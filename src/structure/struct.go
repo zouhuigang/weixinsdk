@@ -22,3 +22,14 @@ type JsapiTicket struct {
 	Expires_in    int64  `json:"expires_in"`
 	NowTimeStamp  int64  `json:"NowTimeStamp"`
 }
+
+//网页授权access_token,每个用户管理维护一个网页授权access_token
+type OauthAccessToken struct {
+	ErrorBaseInfo `mapstructure:",squash"`
+	Access_token  string `json:"access_token"`
+	Refresh_token string `json:"refresh_token"`
+	Openid        string `json:"openid"`
+	Scope         string `json:"scope"`
+	Expires_in    int64  `json:"expires_in"`
+	NowTimeStamp  int64  `json:"NowTimeStamp"`
+}

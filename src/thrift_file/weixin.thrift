@@ -19,6 +19,16 @@ service WxServiceThrift{
         //发送模板消息
         weixin_type.SendTemplateResponseData SendTmplateMessage(1:weixin_type.TemplateMsgData tpl),
         //拼接模板消息
-        string GetTextXml(1:string fromUserName,2:string toUserName, 3:string content)
+        string GetTextXml(1:string fromUserName, 2:string toUserName, 3:string content),
+        //构造网页授权地址
+        weixin_type.AuthCodeURLData AuthCodeURL(1:string redirectURL, 2:string scope),
+        //根据code和snsapi_base获取用户信息
+        weixin_type.UserInfo GetUserInfoBySnsapiBase(1:string code),
+        //根据code和snsapi_userinfo获取用户信息
+        weixin_type.UserInfo GetUserInfoBySnsapiUserinfo(1:string code),
+        //根据openid拉取用户信息
+        weixin_type.UserInfo GetUserInfoByOpenid(1:string openid),
+       
+
 
 }

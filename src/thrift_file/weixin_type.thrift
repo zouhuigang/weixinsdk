@@ -122,11 +122,22 @@ struct SendTemplateResponseData {
 	3:i64 MsgID
 }
 
-// <xml>
-//   <ToUserName><![CDATA[toUser]]></ToUserName>
-//   <FromUserName><![CDATA[fromUser]]></FromUserName>
-//   <CreateTime>12345678</CreateTime>
-//   <MsgType><![CDATA[text]]></MsgType>
-//   <Content><![CDATA[你好]]></Content>
-// </xml>
 
+//用户信息
+struct UserInfo{
+	1:string openid
+	2:string nickname
+	3:i32 sex
+	4:string province
+	5:string city
+	6:string country
+	7:string headimgurl
+	8:list<string> privilege
+	9:string unionid
+}
+
+//返回认证数据
+struct AuthCodeURLData{
+	1:string url
+	2:string state
+}

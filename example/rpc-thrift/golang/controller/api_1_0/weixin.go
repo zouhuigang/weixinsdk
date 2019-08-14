@@ -1,6 +1,7 @@
 package api_1_0
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -13,7 +14,8 @@ import (
 type WeixinApi struct{}
 
 const (
-	token = "weixin" //设置token
+	token  = "weixin" //设置token
+	WEBURL = "http://dki4r6.natappfree.cc/"
 )
 
 var weixinApi = WeixinApi{}
@@ -21,6 +23,11 @@ var weixinApi = WeixinApi{}
 //注册路由
 func (this *WeixinApi) RegisterRoute(g *echo.Group) {
 	g.Any("/weixin/callback", this.wx_callback)
+	g.Any("/weixin/snsapi_base/page1", this.snsapi_base_page1)
+	g.Any("/weixin/snsapi_base/page2", this.snsapi_base_page2)
+
+	g.Any("/weixin/snsapi_userinfo/page1", this.snsapi_userinfo_page1)
+	g.Any("/weixin/snsapi_userinfo/page2", this.snsapi_userinfo_page2)
 }
 
 /*
@@ -33,7 +40,8 @@ func (this *WeixinApi) RegisterRoute(g *echo.Group) {
 func (this *WeixinApi) wx_callback(ctx echo.Context) error {
 
 	method := ctx.Request().Method
-	wxServerClient := utils.GetWxServerClient()
+	wxServerClient, transport := utils.GetWxServerClient()
+	defer transport.Close()
 	if method == "GET" {
 		timestamp := ctx.FormValue("timestamp")
 		nonce := ctx.FormValue("nonce")
@@ -98,4 +106,75 @@ func (this *WeixinApi) wx_callback(ctx echo.Context) error {
 		return ctx.String(http.StatusOK, responeXmlStr)
 	}
 	return ctx.String(http.StatusOK, "提交方式错误")
+}
+
+//微信回调
+func (this *WeixinApi) snsapi_base_page1(ctx echo.Context) error {
+	wxServerClient, transport := utils.GetWxServerClient()
+	defer transport.Close()
+
+	//构造跳转链接
+	redirectURL := fmt.Sprintf("%sweixin/snsapi_base/page2", WEBURL)
+	scope := "snsapi_base"
+	authData, _ := wxServerClient.AuthCodeURL(redirectURL, scope)
+
+	fmt.Println("可以将state保存在cookie中,在下一个页面验证url中的state和保存的是否一致", authData.State)
+	//ctx.Redirect(301, "/welcome")/
+	return ctx.Redirect(301, authData.URL)
+}
+
+func (this *WeixinApi) snsapi_base_page2(ctx echo.Context) error {
+	wxServerClient, transport := utils.GetWxServerClient()
+	defer transport.Close()
+
+	var code string = ctx.FormValue("code")
+	if code == "" {
+		return ctx.String(http.StatusOK, "客户禁止授权")
+	}
+	userinfo, err := wxServerClient.GetUserInfoBySnsapiBase(code)
+	if err != nil {
+		return ctx.String(http.StatusOK, "无感授权失败"+err.Error())
+	}
+
+	buf, err := json.MarshalIndent(userinfo, "", "    ") //格式化编码
+	if err != nil {
+		return ctx.String(http.StatusOK, "json解析失败")
+	}
+	return ctx.String(http.StatusOK, string(buf))
+}
+
+func (this *WeixinApi) snsapi_userinfo_page1(ctx echo.Context) error {
+	wxServerClient, transport := utils.GetWxServerClient()
+	defer transport.Close()
+
+	//构造跳转链接
+	redirectURL := fmt.Sprintf("%sweixin/snsapi_base/page2", WEBURL)
+	scope := "snsapi_userinfo"
+	authData, _ := wxServerClient.AuthCodeURL(redirectURL, scope)
+
+	fmt.Println("可以将state保存在cookie中,在下一个页面验证url中的state和保存的是否一致", authData.State)
+	//ctx.Redirect(301, "/welcome")/
+	return ctx.Redirect(301, authData.URL)
+}
+
+func (this *WeixinApi) snsapi_userinfo_page2(ctx echo.Context) error {
+	wxServerClient, transport := utils.GetWxServerClient()
+	defer transport.Close()
+
+	var code string = ctx.FormValue("code")
+	fmt.Println("code", code)
+	if code == "" {
+		return ctx.String(http.StatusOK, "客户禁止授权")
+	}
+
+	userinfo, err := wxServerClient.GetUserInfoBySnsapiUserinfo(code)
+	if err != nil {
+		return ctx.String(http.StatusOK, "用户授权失败"+err.Error())
+	}
+
+	buf, err := json.MarshalIndent(userinfo, "", "    ") //格式化编码
+	if err != nil {
+		return ctx.String(http.StatusOK, "json解析失败")
+	}
+	return ctx.String(http.StatusOK, string(buf))
 }

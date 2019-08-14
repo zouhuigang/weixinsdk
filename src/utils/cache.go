@@ -59,3 +59,25 @@ func GetCacheFromStorageWithUnmarshal(key string, to interface{}) error {
 	}
 	return nil
 }
+
+//缓冲时间
+func GetAdvanceTime() {
+	// 由于网络的延时, 分布式服务器之间的时间可能不是绝对同步, access_token 过期时间留了一个缓冲区;
+	// switch {
+	// case result.ExpiresIn > 60*60:
+	// 	result.ExpiresIn -= 60 * 20
+	// case result.ExpiresIn > 60*30:
+	// 	result.ExpiresIn -= 60 * 10
+	// case result.ExpiresIn > 60*15:
+	// 	result.ExpiresIn -= 60 * 5
+	// case result.ExpiresIn > 60*5:
+	// 	result.ExpiresIn -= 60
+	// case result.ExpiresIn > 60:
+	// 	result.ExpiresIn -= 20
+	// case result.ExpiresIn > 0:
+	// default:
+	// 	err = fmt.Errorf("invalid expires_in: %d", result.ExpiresIn)
+	// 	return
+	// }
+
+}
