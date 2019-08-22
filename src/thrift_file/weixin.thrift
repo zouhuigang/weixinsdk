@@ -20,6 +20,8 @@ service WxServiceThrift{
         weixin_type.SendTemplateResponseData SendTmplateMessage(1:weixin_type.TemplateMsgData tpl),
         //拼接模板消息
         string GetTextXml(1:string fromUserName, 2:string toUserName, 3:string content),
+        //转发给客服
+        string TransferCustomerService(1:string fromUserName, 2:string toUserName, 3:string kfAccount),
         //构造网页授权地址
         weixin_type.AuthCodeURLData AuthCodeURL(1:string redirectURL, 2:string scope),
         //根据code和snsapi_base获取用户信息

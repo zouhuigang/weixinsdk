@@ -12,8 +12,9 @@ const (
 	WeMsgTypeLink       = "link"
 	WeMsgTypeEvent      = "event"
 
-	WeEventSubscribe   = "subscribe"
-	WeEventUnsubscribe = "unsubscribe"
+	WeEventSubscribe          = "subscribe"
+	WeEventUnsubscribe        = "unsubscribe"
+	WeTransferCustomerService = "transfer_customer_service"
 )
 
 //https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421140453
@@ -33,6 +34,13 @@ type WxMsgTxt struct {
 	XMLName xml.Name `xml:"xml"`
 	CommonMessageHeader
 	Content string `xml:"Content" json:"Content"` // 文本消息内容
+}
+
+//客服消息
+type WxMsgTransferCustomerService struct {
+	XMLName xml.Name `xml:"xml"`
+	CommonMessageHeader
+	KfAccount string `xml:"kfAccount" json:"kfAccount"` // 指定客服
 }
 
 // //图片消息

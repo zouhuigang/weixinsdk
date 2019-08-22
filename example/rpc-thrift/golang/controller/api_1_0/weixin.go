@@ -73,6 +73,9 @@ func (this *WeixinApi) wx_callback(ctx echo.Context) error {
 		if err != nil {
 			return ctx.String(http.StatusOK, "消息解析失败")
 		}
+
+		fromUserName := mixMessage.ResponeMessage.ToUserName
+		toUserName := mixMessage.ResponeMessage.FromUserName
 		if mixMessage.ResponeMessageType == "text" {
 			var contentText string = *mixMessage.ResponeMessage.Content
 			if contentText == "模板1" {
@@ -93,13 +96,13 @@ func (this *WeixinApi) wx_callback(ctx echo.Context) error {
 				respone, err := wxServerClient.SendTmplateMessage(templateMsg)
 				fmt.Println(respone, err)
 			} else {
-				fromUserName := mixMessage.ResponeMessage.ToUserName
-				toUserName := mixMessage.ResponeMessage.FromUserName
 				responeXmlStr, _ = wxServerClient.GetTextXml(fromUserName, toUserName, contentText)
 
 			}
 
-		} else if mixMessage.ResponeMessageType == "image" {
+		} else if mixMessage.ResponeMessageType == "image" { //转发给客服
+			responeXmlStr, _ = wxServerClient.TransferCustomerService(fromUserName, toUserName, "")
+			fmt.Println("微信", responeXmlStr)
 
 		}
 
