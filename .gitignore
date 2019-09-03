@@ -8,3 +8,7 @@ src/weixin\.db
 src/vendor/
 
 src/log/
+
+log/
+
+src/main
