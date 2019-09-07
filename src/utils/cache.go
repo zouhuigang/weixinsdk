@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"errors"
 	"fmt"
 	"weixinsdk/src/logger"
 	zstorage "weixinsdk/src/storage"
@@ -50,7 +49,9 @@ func CacheValid(myToken string, myNowTimeStamp int64, myExpiresIn int64, advance
 func GetCacheFromStorageWithUnmarshal(key string, to interface{}) error {
 	m_storage_json := zstorage.MyStorage.Get(key)
 	if zreg.IsNull(m_storage_json) {
-		return errors.New("get cache from stroage is null")
+		//return errors.New("get cache from stroage is null")
+		//为空不应该报错，因为是正常的
+		return nil
 	}
 
 	var json = jsoniter.ConfigCompatibleWithStandardLibrary

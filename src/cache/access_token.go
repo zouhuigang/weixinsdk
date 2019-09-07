@@ -67,13 +67,16 @@ func initAccessToken() (structure.AccessToken, error) {
 	//读取storage中的数据
 	token := structure.AccessToken{}
 
+	//从缓存中读取值，如果存在，则还需要判断缓存是否有效
 	err := utils.GetCacheFromStorageWithUnmarshal(m_ACCESS_TOKEN_KEY, &token)
 	if err != nil {
-		logger.MyLogger.Errorf(err.Error())
+		msg := fmt.Sprintf("initAccessToken GetCacheFromStorageWithUnmarshal  error: %s", err.Error())
+		logger.MyLogger.Error(msg)
 		return token, err
 	}
 
 	if !utils.CacheValid(token.Access_token, token.NowTimeStamp, token.Expires_in, 1200, "initAccessToken") {
+		//fmt.Println("====================")
 		var m_AppSecret string = zconfig.CFG.MustValue("service", "AppSecret", "")
 		var m_AppID string = zconfig.CFG.MustValue("service", "AppID", "")
 		requrl := fmt.Sprintf("%s&appid=%s&secret=%s", zconfig.SERVICE_APIURL_ACCESS_TOKEN, m_AppID, m_AppSecret)
@@ -81,6 +84,8 @@ func initAccessToken() (structure.AccessToken, error) {
 		m := make(map[string]interface{})
 		if err := json.Unmarshal([]byte(json_str), &m); err != nil {
 			//fmt.Println(err)
+			msg := fmt.Sprintf("initAccessToken json Unmarshal error: %s", err.Error())
+			logger.MyLogger.Error(msg)
 			return token, err
 		}
 
@@ -111,12 +116,13 @@ func initAccessToken() (structure.AccessToken, error) {
 
 		}
 
-		fmt.Printf("weixin server get access_token: %s \n", string(tokenJson))
+		logger.MyLogger.Info("[initAccessToken] weixin server get access_token")
 
 		return token, nil
 
 	}
 
+	logger.MyLogger.Info("[initAccessToken] storage get access_token")
 	return token, nil
 
 }

@@ -6,7 +6,7 @@ import (
 	zconfig "weixinsdk/src/config"
 	zutils "weixinsdk/src/utils"
 
-	z_weixin_service "weixinsdk/src/thrift_file/gen-go/weixin/service" //注意导入Thrift生成的接口包
+	z_weixin_service "weixinsdk/src/thrift_file/gen-go/tencent/weixin/service" //注意导入Thrift生成的接口包
 
 	"github.com/zouhuigang/package/ztime"
 )
