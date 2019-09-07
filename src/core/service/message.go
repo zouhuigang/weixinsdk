@@ -11,7 +11,7 @@ import (
 	zconfig "weixinsdk/src/config"
 	"weixinsdk/src/logger"
 	"weixinsdk/src/structure"
-	z_weixin_service "weixinsdk/src/thrift_file/gen-go/weixin/service" //注意导入Thrift生成的接口包
+	z_weixin_service "weixinsdk/src/thrift_file/gen-go/tencent/weixin/service" //注意导入Thrift生成的接口包
 
 	"github.com/zouhuigang/package/zhttp"
 	"github.com/zouhuigang/package/ztime"

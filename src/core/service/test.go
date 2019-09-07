@@ -3,7 +3,7 @@ package service
 import (
 	"fmt"
 	"time"
-	z_weixin_service "weixinsdk/src/thrift_file/gen-go/weixin/service" //注意导入Thrift生成的接口包
+	z_weixin_service "weixinsdk/src/thrift_file/gen-go/tencent/weixin/service" //注意导入Thrift生成的接口包
 )
 
 func (this *WxServiceThrift) CallBack(callTime int64, name string, paramMap map[string]string) (r []string, err error) {

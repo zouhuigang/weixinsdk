@@ -13,4 +13,6 @@ const (
 	SERVICE_APIURL_USER_INFO = `https://api.weixin.qq.com/cgi-bin/user/info`
 	//网页授权获取用户信息，仅仅在snsapi_userinfo可用
 	SERVICE_APIURL_USER_INFO_SNSAPI_USERINFO = `https://api.weixin.qq.com/sns/userinfo`
+	//创建菜单
+	SERVICE_APIURL_MENU_CREATE = `https://api.weixin.qq.com/cgi-bin/menu/create`
 )

@@ -6,7 +6,7 @@ import (
 	"os"
 	zconfig "weixinsdk/src/config"
 	zstorage "weixinsdk/src/storage"
-	z_weixin_service "weixinsdk/src/thrift_file/gen-go/weixin/service" //注意导入Thrift生成的接口包
+	z_weixin_service "weixinsdk/src/thrift_file/gen-go/tencent/weixin/service" //注意导入Thrift生成的接口包
 	//zutils "weixinsdk/src/utils"
 	"weixinsdk/src/core/service"
 	"weixinsdk/src/logger"

@@ -12,10 +12,10 @@
 ---
 
 
-	thrift -r --gen go weixin.thrift
-	thrift -r --gen php weixin.thrift
-	thrift -r --gen py weixin.thrift
-	thrift -r --gen php:server weixin.thrift #生成PHP服务端接口代码有所不一样
+	thrift -r --gen go service/main.thrift
+	thrift -r --gen php service/main.thrift
+	thrift -r --gen py service/main.thrift
+	thrift -r --gen php:server service/wxfunc/main.thrift #生成PHP服务端接口代码有所不一样
 
 
 
