@@ -8,6 +8,7 @@ include "e_message.thrift"
 include "e_oauth.thrift"
 include "e_userinfo.thrift"
 include "e_respone.thrift"
+include "e_pay.thrift"
 
 //微信服务号接口
 service WxServiceThrift{        
@@ -39,7 +40,8 @@ service WxServiceThrift{
         //创建菜单
         e_respone.WxResponse CreateMenu(1:e_menu.menu menu),
         e_respone.WxResponse CreateMenuByJson(1:binary  menuJsonBytes),
-       
+        //统一下单
+        e_pay.UnifiedOrderResponse UnifiedOrder(1:e_pay.UnifiedOrderParam orderParam), 
 
 
 }
