@@ -2,50 +2,64 @@ namespace go tencent.weixin.service
 namespace php tencent.weixin.service
 namespace py tencent.weixin.service
 
-//微信统一下单参数 
+//微信统一下单参数
 //https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_1
 struct UnifiedOrderParam{
-    1:string appid
-    2:string mch_id
-    3:string device_info
-    4:string nonce_str
-    5:string sign
-    6:string sign_type
-    7:string body
-    8:string detail
-    9:string attach
-    10:string out_trade_no
-    11:string fee_type
-    12:string total_fee
-    13:string spbill_create_ip
-    14:string time_start
-    15:string time_expire
-    16:string goods_tag
-    17:string notify_url
-    18:string trade_type
-    19:string product_id
-    20:string limit_pay
-    21:string openid
-    22:string receipt
-    23:string scene_info
+    1:string Appid
+    2:string MchId
+    3:string DeviceInfo
+    4:string NonceStr
+    5:string Sign
+    6:string SignType
+    7:string Body
+    8:string Detail
+    9:string Attach
+    10:string OutTradeNo
+    11:string FeeType
+    12:string TotalFee
+    13:string SpbillCreateIp
+    14:string TimeStart
+    15:string TimeExpire
+    16:string GoodsTag
+    17:string NotifyUrl
+    18:string TradeType
+    19:string ProductId
+    20:string LimitPay
+    21:string Openid
+    22:string Receipt
+    23:string Scene_info
 }
 
 
 //下单成功/失败返回
 struct UnifiedOrderResponse {
-	1:string return_code
-	2:string return_msg
+	1:string ReturnCode
+	2:string ReturnMsg
     //以下字段在return_code为SUCCESS的时候有返回
-    3:string appid
-    4:string mch_id
-    5:string device_info
-    6:string nonce_str
-    7:string sign
-    8:string result_code
-    9:string err_code
-    10:string err_code_des
+    3:string Appid
+    4:string MchId
+    5:string DeviceInfo
+    6:string NonceStr
+    7:string Sign
+    8:string ResultCode
+    9:string ErrCode
+    10:string ErrCodeDes
     //以下字段在return_code 和result_code都为SUCCESS的时候有返回
-    11:string trade_type
-    12:string prepay_id
-    13:string code_url
+    11:string TradeType
+    12:string PrepayId
+    13:string CodeUrl
+}
+
+
+
+
+struct JsApiParameters {
+    //微信jsapiPay,因为package为关键字，所以用prepay_id代替
+    1:string prepayId
+    2:string nonceStr
+    3:i64 timeStamp
+    4:string sign
+    5:string appId
+    6:string paySign
+
 }

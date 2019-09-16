@@ -15,10 +15,10 @@ func ParamCheckForUnifiedOrder(orderParam *z_weixin_service.UnifiedOrderParam) b
 	if orderParam.TotalFee == "" {
 		return false
 	}
-	if orderParam.SpbillCreateIP == "" {
+	if orderParam.SpbillCreateIp == "" {
 		return false
 	}
-	if orderParam.NotifyURL == "" {
+	if orderParam.NotifyUrl == "" {
 		return false
 	}
 	if orderParam.TradeType == "" {

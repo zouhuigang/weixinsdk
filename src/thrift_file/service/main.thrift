@@ -42,6 +42,8 @@ service WxServiceThrift{
         e_respone.WxResponse CreateMenuByJson(1:binary  menuJsonBytes),
         //统一下单
         e_pay.UnifiedOrderResponse UnifiedOrder(1:e_pay.UnifiedOrderParam orderParam), 
+        //返回js api pay参数
+        e_pay.JsApiParameters GetJsApiParameters(1:e_pay.UnifiedOrderResponse unifiedOrderResult),
 
 
 }

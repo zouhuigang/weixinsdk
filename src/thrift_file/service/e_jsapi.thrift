@@ -19,11 +19,7 @@ struct JsapiSignData{
     3:i64 timestamp,
     4: string url,
     5: string sign,
-    6: string appid,
-    //微信jsapiPay,因为package为关键字，所以用prepay_id代替
-    7:string prepay_id
-    8:string paySign
-    9:string signType
+    6: string appid
 }
 
 //首先定义一个UnifyOrderReq用于填入我们要传入的参数。
