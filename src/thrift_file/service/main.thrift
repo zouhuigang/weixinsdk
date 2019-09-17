@@ -44,6 +44,8 @@ service WxServiceThrift{
         e_pay.UnifiedOrderResponse UnifiedOrder(1:e_pay.UnifiedOrderParam orderParam), 
         //返回js api pay参数
         e_pay.JsApiParameters GetJsApiParameters(1:e_pay.UnifiedOrderResponse unifiedOrderResult),
+        //解析支付回调消息
+        e_pay.WXPayNotify WxpayParseAndVerifySign(1:binary xmlBytes),
 
 
 }

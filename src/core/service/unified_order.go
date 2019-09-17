@@ -1,8 +1,13 @@
 package service
 
 import (
+	"crypto/md5"
+	"encoding/hex"
+	"encoding/xml"
 	"errors"
 	"fmt"
+	"sort"
+	"strings"
 	zconfig "weixinsdk/src/config"
 	"weixinsdk/src/logger"
 	z_weixin_service "weixinsdk/src/thrift_file/gen-go/tencent/weixin/service" //注意导入Thrift生成的接口包
@@ -53,6 +58,35 @@ type UnifiedOrderResponse struct {
 	TradeType  string `xml:"trade_type"`
 	PrepayId   string `xml:"prepay_id"`
 	CodeUrl    string `xml:"code_url"`
+}
+
+type WXPayNotify struct {
+	ReturnCode    string `xml:"return_code"`
+	ReturnMsg     string `xml:"return_msg"`
+	Appid         string `xml:"appid"`
+	MchID         string `xml:"mch_id"`
+	DeviceInfo    string `xml:"device_info"`
+	NonceStr      string `xml:"nonce_str"`
+	Sign          string `xml:"sign"`
+	ResultCode    string `xml:"result_code"`
+	ErrCode       string `xml:"err_code"`
+	ErrCodeDes    string `xml:"err_code_des"`
+	Openid        string `xml:"openid"`
+	IsSubscribe   string `xml:"is_subscribe"`
+	TradeType     string `xml:"trade_type"`
+	BankType      string `xml:"bank_type"`
+	TotalFee      int64  `xml:"total_fee"`
+	FeeType       string `xml:"fee_type"`
+	CashFee       int64  `xml:"cash_fee"`
+	CashFeeType   string `xml:"cash_fee_type"`
+	CouponFee     int64  `xml:"coupon_fee"`
+	CouponCount   int64  `xml:"coupon_count"`
+	CouponID0     string `xml:"coupon_id_0"`
+	CouponFee0    int64  `xml:"coupon_fee_0"`
+	TransactionID string `xml:"transaction_id"`
+	OutTradeNo    string `xml:"out_trade_no"`
+	Attach        string `xml:"attach"`
+	TimeEnd       string `xml:"time_end"`
 }
 
 func (this *WxServiceThrift) UnifiedOrder(orderParam *z_weixin_service.UnifiedOrderParam) (*z_weixin_service.UnifiedOrderResponse, error) {
@@ -113,4 +147,98 @@ func (this *WxServiceThrift) UnifiedOrder(orderParam *z_weixin_service.UnifiedOr
 	}
 
 	return response, err
+}
+
+//支付回调验证签名是否一致
+//https://blog.csdn.net/xyzhaopeng/article/details/50386349
+//https://blog.csdn.net/TauCrus/article/details/90241918
+func (this *WxServiceThrift) WxpayParseAndVerifySign(xmlBytes []byte) (*z_weixin_service.WXPayNotify, error) {
+
+	//1.解析消息
+
+	var wxn WXPayNotify
+	err := xml.Unmarshal(xmlBytes, &wxn)
+	if err != nil {
+		return nil, err
+	}
+
+	//2.验证签名数据,微信支付验证签名是否正确，防止别人任意回调
+	//订单结构体转MAP
+	var reqMap map[string]interface{}
+	reqMap = make(map[string]interface{}, 0)
+	reqMap["return_code"] = wxn.ReturnCode
+	reqMap["return_msg"] = wxn.ReturnMsg
+	reqMap["appid"] = wxn.Appid
+	reqMap["mch_id"] = wxn.MchID
+	reqMap["nonce_str"] = wxn.NonceStr
+	reqMap["result_code"] = wxn.ResultCode
+	reqMap["openid"] = wxn.Openid
+	reqMap["is_subscribe"] = wxn.IsSubscribe
+	reqMap["trade_type"] = wxn.TradeType
+	reqMap["bank_type"] = wxn.BankType
+	reqMap["total_fee"] = wxn.TotalFee
+	reqMap["fee_type"] = wxn.FeeType
+	reqMap["cash_fee"] = wxn.CashFee
+	reqMap["cash_fee_type"] = wxn.CashFeeType
+	reqMap["transaction_id"] = wxn.TransactionID
+	reqMap["out_trade_no"] = wxn.OutTradeNo
+	reqMap["attach"] = wxn.Attach
+	reqMap["time_end"] = wxn.TimeEnd
+	err = wxpayVerifySign(reqMap, wxn.Sign)
+	if err != nil {
+		return nil, err
+	}
+
+	//订单结构体转MAP
+	response := z_weixin_service.NewWXPayNotify()
+	err = utils.StructCopy(wxn, response)
+	if err != nil {
+		return nil, errors.New("结构体复制失败")
+	}
+	return response, nil
+}
+
+//微信支付计算签名的函数
+func wxpayCalcSign(mReq map[string]interface{}, key string) (sign string) {
+	//STEP 1, 对key进行升序排序.
+	sorted_keys := make([]string, 0)
+	for k, _ := range mReq {
+		sorted_keys = append(sorted_keys, k)
+	}
+
+	sort.Strings(sorted_keys)
+
+	//STEP2, 对key=value的键值对用&连接起来，略过空值
+	var signStrings string
+	for _, k := range sorted_keys {
+		value := fmt.Sprintf("%v", mReq[k])
+		if value != "" {
+			signStrings = signStrings + k + "=" + value + "&"
+		}
+	}
+
+	//STEP3, 在键值对的最后加上key=API_KEY
+	if key != "" {
+		signStrings = signStrings + "key=" + key
+	}
+
+	//STEP4, 进行MD5签名并且将所有字符转为大写.
+	md5Ctx := md5.New()
+	md5Ctx.Write([]byte(signStrings))
+	cipherStr := md5Ctx.Sum(nil)
+	upperSign := strings.ToUpper(hex.EncodeToString(cipherStr))
+	return upperSign
+}
+
+func wxpayVerifySign(needVerifyM map[string]interface{}, sign string) error {
+	m_MchKey := zconfig.CFG.MustValue("service", "MchKey", "")
+
+	signCalc := wxpayCalcSign(needVerifyM, m_MchKey)
+
+	// fmt.Println("========", signCalc, sign)
+	if sign == signCalc {
+		return nil
+	}
+
+	return errors.New("签名校验失败" + signCalc)
 }

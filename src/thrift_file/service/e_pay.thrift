@@ -63,3 +63,52 @@ struct JsApiParameters {
     6:string paySign
 
 }
+
+//微信支付回调消息
+/*
+ <xml><appid><![CDATA[wxadd472a86212b893]]></appid>
+<bank_type><![CDATA[LQT]]></bank_type>
+<cash_fee><![CDATA[1]]></cash_fee>
+<fee_type><![CDATA[CNY]]></fee_type>
+<is_subscribe><![CDATA[Y]]></is_subscribe>
+<mch_id><![CDATA[1555438221]]></mch_id>
+<nonce_str><![CDATA[HFN4TCYHK6M7TJVVX7KBNNRC4H8QR6LA]]></nonce_str>
+<openid><![CDATA[ozc4fs5UHdrxc7hVRoC42Yv2qB1k]]></openid>
+<out_trade_no><![CDATA[WE0190916180864191]]></out_trade_no>
+<result_code><![CDATA[SUCCESS]]></result_code>
+<return_code><![CDATA[SUCCESS]]></return_code>
+<sign><![CDATA[AC49F7C8102BC9EB007CCE2AC1A5F61F]]></sign>
+<time_end><![CDATA[20190917135711]]></time_end>
+<total_fee>1</total_fee>
+<trade_type><![CDATA[JSAPI]]></trade_type>
+<transaction_id><![CDATA[4200000409201909179443368122]]></transaction_id>
+</xml>
+*/
+struct WXPayNotify{
+	1:string return_code
+	2:string return_msg
+	3:string appid
+	4:string mch_id
+	5:string device_info
+	6:string nonce_str
+    7:string sign
+	8:string result_code
+    9:string err_code
+    10:string err_code_des
+    11:string openid
+	12:string is_subscribe
+	13:string trade_type
+    14:string bank_type
+    15:i64 total_fee
+    16:string fee_type
+	17:i64 cash_fee
+    18:string cash_fee_type
+    19:i64 coupon_fee
+    20:i64 coupon_count
+    21:string coupon_id_0
+    22:i64 coupon_fee_0
+    23:string transaction_id
+    24:string out_trade_no
+    25:string attach
+    26:string time_end
+}
