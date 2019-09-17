@@ -15,4 +15,6 @@ const (
 	SERVICE_APIURL_USER_INFO_SNSAPI_USERINFO = `https://api.weixin.qq.com/sns/userinfo`
 	//创建菜单
 	SERVICE_APIURL_MENU_CREATE = `https://api.weixin.qq.com/cgi-bin/menu/create`
+	//统一下单
+	SERVICE_APIURL_PAY_UNIFIEDORDER = `https://api.mch.weixin.qq.com/pay/unifiedorder`
 )
