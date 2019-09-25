@@ -17,4 +17,8 @@ const (
 	SERVICE_APIURL_MENU_CREATE = `https://api.weixin.qq.com/cgi-bin/menu/create`
 	//统一下单
 	SERVICE_APIURL_PAY_UNIFIEDORDER = `https://api.mch.weixin.qq.com/pay/unifiedorder`
+	//二维码生成,会返回一个ticket
+	SERVICE_APIURL_QRCODE_CREATE = `https://api.weixin.qq.com/cgi-bin/qrcode/create`
+	//二维码显示,根据ticket展示的是一张图片
+	SERVICE_APIURL_QRCODE_SHOW = `https://mp.weixin.qq.com/cgi-bin/showqrcode`
 )
