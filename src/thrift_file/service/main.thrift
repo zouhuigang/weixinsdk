@@ -46,6 +46,6 @@ service WxServiceThrift{
         e_pay.JsApiParameters GetJsApiParameters(1:e_pay.UnifiedOrderResponse unifiedOrderResult),
         //解析支付回调消息
         e_pay.WXPayNotify WxpayParseAndVerifySign(1:binary xmlBytes),
-
-
+        //二维码生成
+        string QrcodeShow(1:binary qrJsonBytes),
 }

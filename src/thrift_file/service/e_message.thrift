@@ -41,6 +41,7 @@ struct MixedMessage  {
 
 	// 事件
 	19:string Event
+	20:string EventKey
 }
 
 
