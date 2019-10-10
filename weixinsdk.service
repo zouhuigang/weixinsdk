@@ -1,0 +1,14 @@
+[Unit]
+Description=weixinsdk
+Documentation=https://github.com/zouhuigang/weixinsdk
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/usr/local/software/weixinsdk
+ExecStart=/usr/local/software/weixinsdk/weixinsdk
+Restart=on-failure
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
