@@ -14,3 +14,9 @@ log/
 src/main
 
 doc/weixinsdk.wiki/
+
+build_prod/
+
+*.rpm
+
+weixinsdk
