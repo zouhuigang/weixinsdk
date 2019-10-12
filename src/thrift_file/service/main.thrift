@@ -1,6 +1,7 @@
 namespace go tencent.weixin.service
 namespace php tencent.weixin.service
 namespace py tencent.weixin.service
+namespace java tencent.weixin.service
 include "e_curstom.thrift"
 include "e_jsapi.thrift"
 include "e_menu.thrift"

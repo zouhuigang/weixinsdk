@@ -1,8 +1,5 @@
 example/rpc-thrift/python/gen-py/*
 example/rpc-thrift/python/venv/*
-src/thrift_file/gen-go/
-src/thrift_file/gen-php/
-src/thrift_file/gen-py/
 src/weixin\.db
 
 src/vendor/
