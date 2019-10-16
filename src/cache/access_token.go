@@ -54,8 +54,9 @@ const m_ACCESS_TOKEN_EXPIRES = 7200
 
 //得到token
 func GetAccessToken() (string, error) {
-
+	logger.MyLogger.Debug("GetAccessToken 1")
 	if !utils.CacheValid(MyAccessToken.Access_token, MyAccessToken.NowTimeStamp, MyAccessToken.Expires_in, 1200, "GetAccessToken") {
+		logger.MyLogger.Debug("GetAccessToken 2")
 		MyAccessToken, err = initAccessToken()
 	}
 
@@ -63,7 +64,7 @@ func GetAccessToken() (string, error) {
 }
 
 func initAccessToken() (structure.AccessToken, error) {
-
+	logger.MyLogger.Debug("initAccessToken start")
 	//读取storage中的数据
 	token := structure.AccessToken{}
 
@@ -75,8 +76,11 @@ func initAccessToken() (structure.AccessToken, error) {
 		return token, err
 	}
 
+	logger.MyLogger.Debug("initAccessToken2")
+
 	if !utils.CacheValid(token.Access_token, token.NowTimeStamp, token.Expires_in, 1200, "initAccessToken") {
 		//fmt.Println("====================")
+		logger.MyLogger.Debug("initAccessToken3")
 		var m_AppSecret string = zconfig.CFG.MustValue("service", "AppSecret", "")
 		var m_AppID string = zconfig.CFG.MustValue("service", "AppID", "")
 		requrl := fmt.Sprintf("%s&appid=%s&secret=%s", zconfig.SERVICE_APIURL_ACCESS_TOKEN, m_AppID, m_AppSecret)
@@ -90,11 +94,15 @@ func initAccessToken() (structure.AccessToken, error) {
 		}
 
 		if err := mapstructure.Decode(m, &token); err != nil {
-			//fmt.Println(err)
+			msg := fmt.Sprintf("initAccessToken Decode error: %s", err.Error())
+			logger.MyLogger.Error(msg)
 			return token, err
 		}
 
 		if token.Errcode != 0 {
+			msg := fmt.Sprintf("initAccessToken token.Errcode:%d", token.Errcode)
+			logger.MyLogger.Error(msg)
+
 			wxMsg := fmt.Sprintf("Errcode:%d,Errmsg:%s", token.Errcode, token.Errmsg)
 			return token, errors.New(wxMsg)
 		}
@@ -104,6 +112,8 @@ func initAccessToken() (structure.AccessToken, error) {
 		tokenJson, err := json.Marshal(token)
 		if err != nil {
 			//fmt.Println("access_token json字符串错误")
+			msg := fmt.Sprintf("initAccessToken json Marshal error: %s", err.Error())
+			logger.MyLogger.Error(msg)
 			return token, errors.New("access_token json字符串错误")
 		}
 
@@ -111,6 +121,9 @@ func initAccessToken() (structure.AccessToken, error) {
 			err := zstorage.MyStorage.Set(m_ACCESS_TOKEN_KEY, string(tokenJson), m_ACCESS_TOKEN_EXPIRES)
 			if err != nil {
 				//fmt.Println("storage fail")
+				msg := fmt.Sprintf("initAccessToken MyStorage.Set error: %s", err.Error())
+				logger.MyLogger.Error(msg)
+
 				return token, errors.New("storage fail")
 			}
 
