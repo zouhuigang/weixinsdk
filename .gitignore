@@ -1,5 +1,6 @@
 example/rpc-thrift/python/gen-py/*
 example/rpc-thrift/python/venv/*
+example/rpc-thrift/python/*
 src/weixin\.db
 
 src/vendor/
@@ -17,3 +18,11 @@ build_prod/
 *.rpm
 
 weixinsdk
+
+src/thrift_file/gen-java/
+
+src/thrift_file/gen-py/
+
+src/thrift_file/gen-php/
+
+weixinsdk.wiki/
