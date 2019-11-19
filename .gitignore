@@ -26,3 +26,7 @@ src/thrift_file/gen-py/
 src/thrift_file/gen-php/
 
 weixinsdk.wiki/
+
+test/
+
+build/

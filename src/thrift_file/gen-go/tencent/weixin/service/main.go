@@ -82,7 +82,7 @@ type WxServiceThrift interface {
   WxpayParseAndVerifySign(xmlBytes []byte) (r *WXPayNotify, err error)
   // Parameters:
   //  - QrJsonBytes
-  QrcodeShow(qrJsonBytes []byte) (r string, err error)
+  QrcodeShow(qrJsonBytes []byte) (r *QrRespone, err error)
 }
 
 type WxServiceThriftClient struct {
@@ -1572,7 +1572,7 @@ func (p *WxServiceThriftClient) recvWxpayParseAndVerifySign() (value *WXPayNotif
 
 // Parameters:
 //  - QrJsonBytes
-func (p *WxServiceThriftClient) QrcodeShow(qrJsonBytes []byte) (r string, err error) {
+func (p *WxServiceThriftClient) QrcodeShow(qrJsonBytes []byte) (r *QrRespone, err error) {
   if err = p.sendQrcodeShow(qrJsonBytes); err != nil { return }
   return p.recvQrcodeShow()
 }
@@ -1600,7 +1600,7 @@ func (p *WxServiceThriftClient) sendQrcodeShow(qrJsonBytes []byte)(err error) {
 }
 
 
-func (p *WxServiceThriftClient) recvQrcodeShow() (value string, err error) {
+func (p *WxServiceThriftClient) recvQrcodeShow() (value *QrRespone, err error) {
   iprot := p.InputProtocol
   if iprot == nil {
     iprot = p.ProtocolFactory.GetProtocol(p.Transport)
@@ -2635,7 +2635,7 @@ func (p *wxServiceThriftProcessorQrcodeShow) Process(seqId int32, iprot, oprot t
 
   iprot.ReadMessageEnd()
   result := WxServiceThriftQrcodeShowResult{}
-var retval string
+var retval *QrRespone
   var err2 error
   if retval, err2 = p.handler.QrcodeShow(args.QrJsonBytes); err2 != nil {
     x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing QrcodeShow: " + err2.Error())
@@ -2645,7 +2645,7 @@ var retval string
     oprot.Flush()
     return true, err2
   } else {
-    result.Success = &retval
+    result.Success = retval
 }
   if err2 = oprot.WriteMessageBegin("QrcodeShow", thrift.REPLY, seqId); err2 != nil {
     err = err2
@@ -6459,19 +6459,19 @@ func (p *WxServiceThriftQrcodeShowArgs) String() string {
 // Attributes:
 //  - Success
 type WxServiceThriftQrcodeShowResult struct {
-  Success *string `thrift:"success,0" db:"success" json:"success,omitempty"`
+  Success *QrRespone `thrift:"success,0" db:"success" json:"success,omitempty"`
 }
 
 func NewWxServiceThriftQrcodeShowResult() *WxServiceThriftQrcodeShowResult {
   return &WxServiceThriftQrcodeShowResult{}
 }
 
-var WxServiceThriftQrcodeShowResult_Success_DEFAULT string
-func (p *WxServiceThriftQrcodeShowResult) GetSuccess() string {
+var WxServiceThriftQrcodeShowResult_Success_DEFAULT *QrRespone
+func (p *WxServiceThriftQrcodeShowResult) GetSuccess() *QrRespone {
   if !p.IsSetSuccess() {
     return WxServiceThriftQrcodeShowResult_Success_DEFAULT
   }
-return *p.Success
+return p.Success
 }
 func (p *WxServiceThriftQrcodeShowResult) IsSetSuccess() bool {
   return p.Success != nil
@@ -6510,11 +6510,10 @@ func (p *WxServiceThriftQrcodeShowResult) Read(iprot thrift.TProtocol) error {
 }
 
 func (p *WxServiceThriftQrcodeShowResult)  ReadField0(iprot thrift.TProtocol) error {
-  if v, err := iprot.ReadString(); err != nil {
-  return thrift.PrependError("error reading field 0: ", err)
-} else {
-  p.Success = &v
-}
+  p.Success = &QrRespone{}
+  if err := p.Success.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
+  }
   return nil
 }
 
@@ -6533,10 +6532,11 @@ func (p *WxServiceThriftQrcodeShowResult) Write(oprot thrift.TProtocol) error {
 
 func (p *WxServiceThriftQrcodeShowResult) writeField0(oprot thrift.TProtocol) (err error) {
   if p.IsSetSuccess() {
-    if err := oprot.WriteFieldBegin("success", thrift.STRING, 0); err != nil {
+    if err := oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
       return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err) }
-    if err := oprot.WriteString(string(*p.Success)); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T.success (0) field write error: ", p), err) }
+    if err := p.Success.Write(oprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Success), err)
+    }
     if err := oprot.WriteFieldEnd(); err != nil {
       return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err) }
   }

@@ -40,7 +40,7 @@ func Usage() {
   fmt.Fprintln(os.Stderr, "  UnifiedOrderResponse UnifiedOrder(UnifiedOrderParam orderParam)")
   fmt.Fprintln(os.Stderr, "  JsApiParameters GetJsApiParameters(UnifiedOrderResponse unifiedOrderResult)")
   fmt.Fprintln(os.Stderr, "  WXPayNotify WxpayParseAndVerifySign(string xmlBytes)")
-  fmt.Fprintln(os.Stderr, "  string QrcodeShow(string qrJsonBytes)")
+  fmt.Fprintln(os.Stderr, "  QrRespone QrcodeShow(string qrJsonBytes)")
   fmt.Fprintln(os.Stderr)
   os.Exit(0)
 }

@@ -10,6 +10,7 @@ include "e_oauth.thrift"
 include "e_userinfo.thrift"
 include "e_respone.thrift"
 include "e_pay.thrift"
+include "e_qrcode.thrift"
 
 //微信服务号接口
 service WxServiceThrift{        
@@ -48,5 +49,5 @@ service WxServiceThrift{
         //解析支付回调消息
         e_pay.WXPayNotify WxpayParseAndVerifySign(1:binary xmlBytes),
         //二维码生成
-        string QrcodeShow(1:binary qrJsonBytes),
+        e_qrcode.QrRespone QrcodeShow(1:binary qrJsonBytes),
 }
