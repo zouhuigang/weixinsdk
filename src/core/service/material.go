@@ -10,7 +10,7 @@ import (
 	"github.com/zouhuigang/package/zhttp"
 )
 
-func MaterialCount() (*z_weixin_service.MaCount, error) {
+func (this *WxServiceThrift) MaterialCount() (*z_weixin_service.MaCount, error) {
 	access_token, err := zcache.GetAccessToken()
 	if err != nil {
 		return nil, err
@@ -25,7 +25,7 @@ func MaterialCount() (*z_weixin_service.MaCount, error) {
 }
 
 /*素材列表*/
-func MaterialList() (*z_weixin_service.Res, error) {
+func (this *WxServiceThrift) MaterialList() (*z_weixin_service.Res, error) {
 	response := new(z_weixin_service.Res)
 	access_token, err := zcache.GetAccessToken()
 	if err != nil {

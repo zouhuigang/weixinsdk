@@ -34,15 +34,15 @@ func init() {
 }
 
 func main() {
-
+	handler := &service.WxServiceThrift{}
 	//素材列表
-	s, err := service.MaterialList()
+	s, err := handler.MaterialList()
 	if err != nil {
 	}
 	fmt.Println(s)
 
 	//素材总数
-	sb, err := service.MaterialCount()
+	sb, err := handler.MaterialCount()
 	if err != nil {
 	}
 	fmt.Println(sb)
