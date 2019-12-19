@@ -21,4 +21,8 @@ const (
 	SERVICE_APIURL_QRCODE_CREATE = `https://api.weixin.qq.com/cgi-bin/qrcode/create`
 	//二维码显示,根据ticket展示的是一张图片
 	SERVICE_APIURL_QRCODE_SHOW = `https://mp.weixin.qq.com/cgi-bin/showqrcode`
+	//获取素材列表
+	SERVICE_APIURL_BATCHGET_MATERIAL = `https://api.weixin.qq.com/cgi-bin/material/batchget_material`
+	//获取素材总数
+	SERVICE_APIURL_MATERIAL_COUNT = `https://api.weixin.qq.com/cgi-bin/material/get_materialcount`
 )

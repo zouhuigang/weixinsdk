@@ -125,6 +125,8 @@ func (this *WxServiceThrift) GetTextXml(fromUserName, toUserName, content string
 
 }
 
+//回复图片
+
 //发送消息
 // func (this *WxServiceThrift) GetText(msg *structure.MixedMessage) *structure.WxMsgTxt {
 // 	return &structure.WxMsgTxt{
