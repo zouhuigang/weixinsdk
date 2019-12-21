@@ -674,3 +674,208 @@ func (p *MaCount) String() string {
   return fmt.Sprintf("MaCount(%+v)", *p)
 }
 
+// Attributes:
+//  - Type
+//  - MediaID
+//  - CreatedAt
+//  - Errcode
+//  - Errmsg
+type WxImage struct {
+  Type string `thrift:"type,1" db:"type" json:"type"`
+  MediaID string `thrift:"media_id,2" db:"media_id" json:"media_id"`
+  CreatedAt int64 `thrift:"created_at,3" db:"created_at" json:"created_at"`
+  Errcode int32 `thrift:"Errcode,4" db:"Errcode" json:"Errcode"`
+  Errmsg string `thrift:"Errmsg,5" db:"Errmsg" json:"Errmsg"`
+}
+
+func NewWxImage() *WxImage {
+  return &WxImage{}
+}
+
+
+func (p *WxImage) GetType() string {
+  return p.Type
+}
+
+func (p *WxImage) GetMediaID() string {
+  return p.MediaID
+}
+
+func (p *WxImage) GetCreatedAt() int64 {
+  return p.CreatedAt
+}
+
+func (p *WxImage) GetErrcode() int32 {
+  return p.Errcode
+}
+
+func (p *WxImage) GetErrmsg() string {
+  return p.Errmsg
+}
+func (p *WxImage) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 1:
+      if err := p.ReadField1(iprot); err != nil {
+        return err
+      }
+    case 2:
+      if err := p.ReadField2(iprot); err != nil {
+        return err
+      }
+    case 3:
+      if err := p.ReadField3(iprot); err != nil {
+        return err
+      }
+    case 4:
+      if err := p.ReadField4(iprot); err != nil {
+        return err
+      }
+    case 5:
+      if err := p.ReadField5(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *WxImage)  ReadField1(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(); err != nil {
+  return thrift.PrependError("error reading field 1: ", err)
+} else {
+  p.Type = v
+}
+  return nil
+}
+
+func (p *WxImage)  ReadField2(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(); err != nil {
+  return thrift.PrependError("error reading field 2: ", err)
+} else {
+  p.MediaID = v
+}
+  return nil
+}
+
+func (p *WxImage)  ReadField3(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI64(); err != nil {
+  return thrift.PrependError("error reading field 3: ", err)
+} else {
+  p.CreatedAt = v
+}
+  return nil
+}
+
+func (p *WxImage)  ReadField4(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI32(); err != nil {
+  return thrift.PrependError("error reading field 4: ", err)
+} else {
+  p.Errcode = v
+}
+  return nil
+}
+
+func (p *WxImage)  ReadField5(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(); err != nil {
+  return thrift.PrependError("error reading field 5: ", err)
+} else {
+  p.Errmsg = v
+}
+  return nil
+}
+
+func (p *WxImage) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("WxImage"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField1(oprot); err != nil { return err }
+    if err := p.writeField2(oprot); err != nil { return err }
+    if err := p.writeField3(oprot); err != nil { return err }
+    if err := p.writeField4(oprot); err != nil { return err }
+    if err := p.writeField5(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *WxImage) writeField1(oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin("type", thrift.STRING, 1); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:type: ", p), err) }
+  if err := oprot.WriteString(string(p.Type)); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.type (1) field write error: ", p), err) }
+  if err := oprot.WriteFieldEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 1:type: ", p), err) }
+  return err
+}
+
+func (p *WxImage) writeField2(oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin("media_id", thrift.STRING, 2); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:media_id: ", p), err) }
+  if err := oprot.WriteString(string(p.MediaID)); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.media_id (2) field write error: ", p), err) }
+  if err := oprot.WriteFieldEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 2:media_id: ", p), err) }
+  return err
+}
+
+func (p *WxImage) writeField3(oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin("created_at", thrift.I64, 3); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:created_at: ", p), err) }
+  if err := oprot.WriteI64(int64(p.CreatedAt)); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.created_at (3) field write error: ", p), err) }
+  if err := oprot.WriteFieldEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 3:created_at: ", p), err) }
+  return err
+}
+
+func (p *WxImage) writeField4(oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin("Errcode", thrift.I32, 4); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:Errcode: ", p), err) }
+  if err := oprot.WriteI32(int32(p.Errcode)); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.Errcode (4) field write error: ", p), err) }
+  if err := oprot.WriteFieldEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 4:Errcode: ", p), err) }
+  return err
+}
+
+func (p *WxImage) writeField5(oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin("Errmsg", thrift.STRING, 5); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 5:Errmsg: ", p), err) }
+  if err := oprot.WriteString(string(p.Errmsg)); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.Errmsg (5) field write error: ", p), err) }
+  if err := oprot.WriteFieldEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 5:Errmsg: ", p), err) }
+  return err
+}
+
+func (p *WxImage) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("WxImage(%+v)", *p)
+}
+

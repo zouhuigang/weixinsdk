@@ -30,28 +30,10 @@ struct MaCount{
 	4:i64 news_count,
 }
 
-// type Item struct {
-// 	MediaId    string `json:"media_id"`
-// 	Name       string `json:"name"`
-// 	UpdateTime string `json:"update_time"`
-// 	Url        string `json:"url"`
-// }
-
-// type Res struct {
-// 	TotalCount int64  `json:"total_count"`
-// 	ItemCount  int64  `json:"item_count"`
-// 	Items      []Item `json:"item"`
-// }
-
-// type WxParm struct {
-// 	Type   string `json:"type"`
-// 	Offset int    `json:"offset"`
-// 	Count  int    `json:"count"`
-// }
-
-// type MaCount struct {
-// 	TotalCount int64 `json:"voice_count"`
-// 	VideoCount int64 `json:"video_count"`
-// 	ImageCount int64 `json:"image_count"`
-// 	NewsCount  int64 `json:"news_count"`
-// }
+struct WxImage{
+	1:string type,
+	2:string media_id,
+	3:i64 created_at,
+	4:i32 Errcode
+	5:string Errmsg
+}

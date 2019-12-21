@@ -25,4 +25,6 @@ const (
 	SERVICE_APIURL_BATCHGET_MATERIAL = `https://api.weixin.qq.com/cgi-bin/material/batchget_material`
 	//获取素材总数
 	SERVICE_APIURL_MATERIAL_COUNT = `https://api.weixin.qq.com/cgi-bin/material/get_materialcount`
+	//上传素材
+	SERVICE_APIURL_MATERIAL_ADD = `https://api.weixin.qq.com/cgi-bin/material/add_material`
 )

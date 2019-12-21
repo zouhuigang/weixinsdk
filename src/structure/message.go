@@ -27,6 +27,7 @@ type CommonMessageHeader struct {
 	FromUserName string `xml:"FromUserName" json:"FromUserName"`
 	CreateTime   int64  `xml:"CreateTime"   json:"CreateTime"`
 	MsgType      string `xml:"MsgType"      json:"MsgType"`
+	ArticleCount int32  `xml:"ArticleCount"   json:"ArticleCount"`
 }
 
 // //文本消息,XMLNAME是最外面的名称
@@ -43,12 +44,28 @@ type WxMsgTransferCustomerService struct {
 	KfAccount string `xml:"kfAccount" json:"kfAccount"` // 指定客服
 }
 
-// //图片消息
-// type WxMsgImage struct {
-// 	CommonMessageHeader
-// 	MediaId string `xml:"MediaId" json:"MediaId"` // 图片媒体文件id，可以调用获取媒体文件接口拉取数据
-// 	PicURL  string `xml:"PicUrl"  json:"PicUrl"`  // 图片链接
-// }
+type Image struct {
+	MediaId string `xml:"MediaId" json:"MediaId"`
+}
+type Articles struct {
+	XMLName xml.Name `xml:"Articles"`
+	Item    []Item
+}
+type Item struct {
+	XMLName     xml.Name `xml:"item"`
+	Title       string   `xml:"Title" json:"Title"`
+	Description string   `xml:"Description" json:"Description"`
+	PicUrl      string   `xml:"PicUrl" json:"PicUrl"`
+	Url         string   `xml:"Url" json:"Url"`
+}
+
+type WxAutoReply struct {
+	XMLName xml.Name `xml:"xml"`
+	CommonMessageHeader
+	Content  string   `xml:"Content" json:"Content"` // 文本消息内容
+	Image    Image    `xml:"Image" json:"Image"`
+	Articles Articles `xml:"Articles" json:"Articles"`
+}
 
 // //语音消息
 // type WxMsgVoice struct {

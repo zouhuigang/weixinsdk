@@ -9,6 +9,7 @@ import (
 	"sort"
 	"strings"
 	zconfig "weixinsdk/src/config"
+	"weixinsdk/src/lib"
 	"weixinsdk/src/logger"
 	z_weixin_service "weixinsdk/src/thrift_file/gen-go/tencent/weixin/service" //注意导入Thrift生成的接口包
 	"weixinsdk/src/utils"
@@ -93,7 +94,7 @@ func (this *WxServiceThrift) UnifiedOrder(orderParam *z_weixin_service.UnifiedOr
 	lg := fmt.Sprintf(" UnifiedOrder Receiving:%v", orderParam)
 	logger.MyLogger.Debug(lg)
 
-	if !utils.ParamCheckForUnifiedOrder(orderParam) {
+	if !lib.ParamCheckForUnifiedOrder(orderParam) {
 		return nil, errors.New("请检查订单必传参数")
 	}
 

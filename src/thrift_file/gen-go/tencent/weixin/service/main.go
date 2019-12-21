@@ -85,6 +85,13 @@ type WxServiceThrift interface {
   QrcodeShow(qrJsonBytes []byte) (r *QrRespone, err error)
   MaterialCount() (r *MaCount, err error)
   MaterialList() (r *Res, err error)
+  // Parameters:
+  //  - Utype
+  //  - Filename
+  UpImage(utype string, filename string) (r *WxImage, err error)
+  // Parameters:
+  //  - Text
+  GetAutoReplyXml(text *AutoReplyData) (r string, err error)
 }
 
 type WxServiceThriftClient struct {
@@ -1794,6 +1801,160 @@ func (p *WxServiceThriftClient) recvMaterialList() (value *Res, err error) {
   return
 }
 
+// Parameters:
+//  - Utype
+//  - Filename
+func (p *WxServiceThriftClient) UpImage(utype string, filename string) (r *WxImage, err error) {
+  if err = p.sendUpImage(utype, filename); err != nil { return }
+  return p.recvUpImage()
+}
+
+func (p *WxServiceThriftClient) sendUpImage(utype string, filename string)(err error) {
+  oprot := p.OutputProtocol
+  if oprot == nil {
+    oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+    p.OutputProtocol = oprot
+  }
+  p.SeqId++
+  if err = oprot.WriteMessageBegin("UpImage", thrift.CALL, p.SeqId); err != nil {
+      return
+  }
+  args := WxServiceThriftUpImageArgs{
+  Utype : utype,
+  Filename : filename,
+  }
+  if err = args.Write(oprot); err != nil {
+      return
+  }
+  if err = oprot.WriteMessageEnd(); err != nil {
+      return
+  }
+  return oprot.Flush()
+}
+
+
+func (p *WxServiceThriftClient) recvUpImage() (value *WxImage, err error) {
+  iprot := p.InputProtocol
+  if iprot == nil {
+    iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+    p.InputProtocol = iprot
+  }
+  method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+  if err != nil {
+    return
+  }
+  if method != "UpImage" {
+    err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "UpImage failed: wrong method name")
+    return
+  }
+  if p.SeqId != seqId {
+    err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "UpImage failed: out of sequence response")
+    return
+  }
+  if mTypeId == thrift.EXCEPTION {
+    error44 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error45 error
+    error45, err = error44.Read(iprot)
+    if err != nil {
+      return
+    }
+    if err = iprot.ReadMessageEnd(); err != nil {
+      return
+    }
+    err = error45
+    return
+  }
+  if mTypeId != thrift.REPLY {
+    err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "UpImage failed: invalid message type")
+    return
+  }
+  result := WxServiceThriftUpImageResult{}
+  if err = result.Read(iprot); err != nil {
+    return
+  }
+  if err = iprot.ReadMessageEnd(); err != nil {
+    return
+  }
+  value = result.GetSuccess()
+  return
+}
+
+// Parameters:
+//  - Text
+func (p *WxServiceThriftClient) GetAutoReplyXml(text *AutoReplyData) (r string, err error) {
+  if err = p.sendGetAutoReplyXml(text); err != nil { return }
+  return p.recvGetAutoReplyXml()
+}
+
+func (p *WxServiceThriftClient) sendGetAutoReplyXml(text *AutoReplyData)(err error) {
+  oprot := p.OutputProtocol
+  if oprot == nil {
+    oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+    p.OutputProtocol = oprot
+  }
+  p.SeqId++
+  if err = oprot.WriteMessageBegin("getAutoReplyXml", thrift.CALL, p.SeqId); err != nil {
+      return
+  }
+  args := WxServiceThriftGetAutoReplyXmlArgs{
+  Text : text,
+  }
+  if err = args.Write(oprot); err != nil {
+      return
+  }
+  if err = oprot.WriteMessageEnd(); err != nil {
+      return
+  }
+  return oprot.Flush()
+}
+
+
+func (p *WxServiceThriftClient) recvGetAutoReplyXml() (value string, err error) {
+  iprot := p.InputProtocol
+  if iprot == nil {
+    iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+    p.InputProtocol = iprot
+  }
+  method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+  if err != nil {
+    return
+  }
+  if method != "getAutoReplyXml" {
+    err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "getAutoReplyXml failed: wrong method name")
+    return
+  }
+  if p.SeqId != seqId {
+    err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "getAutoReplyXml failed: out of sequence response")
+    return
+  }
+  if mTypeId == thrift.EXCEPTION {
+    error46 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error47 error
+    error47, err = error46.Read(iprot)
+    if err != nil {
+      return
+    }
+    if err = iprot.ReadMessageEnd(); err != nil {
+      return
+    }
+    err = error47
+    return
+  }
+  if mTypeId != thrift.REPLY {
+    err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "getAutoReplyXml failed: invalid message type")
+    return
+  }
+  result := WxServiceThriftGetAutoReplyXmlResult{}
+  if err = result.Read(iprot); err != nil {
+    return
+  }
+  if err = iprot.ReadMessageEnd(); err != nil {
+    return
+  }
+  value = result.GetSuccess()
+  return
+}
+
 
 type WxServiceThriftProcessor struct {
   processorMap map[string]thrift.TProcessorFunction
@@ -1815,30 +1976,32 @@ func (p *WxServiceThriftProcessor) ProcessorMap() map[string]thrift.TProcessorFu
 
 func NewWxServiceThriftProcessor(handler WxServiceThrift) *WxServiceThriftProcessor {
 
-  self44 := &WxServiceThriftProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
-  self44.processorMap["CallBack"] = &wxServiceThriftProcessorCallBack{handler:handler}
-  self44.processorMap["put"] = &wxServiceThriftProcessorPut{handler:handler}
-  self44.processorMap["GetAccessToken"] = &wxServiceThriftProcessorGetAccessToken{handler:handler}
-  self44.processorMap["GetJsapiTicket"] = &wxServiceThriftProcessorGetJsapiTicket{handler:handler}
-  self44.processorMap["JsapiSign"] = &wxServiceThriftProcessorJsapiSign{handler:handler}
-  self44.processorMap["IsWeixinServer"] = &wxServiceThriftProcessorIsWeixinServer{handler:handler}
-  self44.processorMap["ParseTemplateToMixedMessages"] = &wxServiceThriftProcessorParseTemplateToMixedMessages{handler:handler}
-  self44.processorMap["SendTmplateMessage"] = &wxServiceThriftProcessorSendTmplateMessage{handler:handler}
-  self44.processorMap["GetTextXml"] = &wxServiceThriftProcessorGetTextXml{handler:handler}
-  self44.processorMap["TransferCustomerService"] = &wxServiceThriftProcessorTransferCustomerService{handler:handler}
-  self44.processorMap["AuthCodeURL"] = &wxServiceThriftProcessorAuthCodeURL{handler:handler}
-  self44.processorMap["GetUserInfoBySnsapiBase"] = &wxServiceThriftProcessorGetUserInfoBySnsapiBase{handler:handler}
-  self44.processorMap["GetUserInfoBySnsapiUserinfo"] = &wxServiceThriftProcessorGetUserInfoBySnsapiUserinfo{handler:handler}
-  self44.processorMap["GetUserInfoByOpenid"] = &wxServiceThriftProcessorGetUserInfoByOpenid{handler:handler}
-  self44.processorMap["CreateMenu"] = &wxServiceThriftProcessorCreateMenu{handler:handler}
-  self44.processorMap["CreateMenuByJson"] = &wxServiceThriftProcessorCreateMenuByJson{handler:handler}
-  self44.processorMap["UnifiedOrder"] = &wxServiceThriftProcessorUnifiedOrder{handler:handler}
-  self44.processorMap["GetJsApiParameters"] = &wxServiceThriftProcessorGetJsApiParameters{handler:handler}
-  self44.processorMap["WxpayParseAndVerifySign"] = &wxServiceThriftProcessorWxpayParseAndVerifySign{handler:handler}
-  self44.processorMap["QrcodeShow"] = &wxServiceThriftProcessorQrcodeShow{handler:handler}
-  self44.processorMap["MaterialCount"] = &wxServiceThriftProcessorMaterialCount{handler:handler}
-  self44.processorMap["MaterialList"] = &wxServiceThriftProcessorMaterialList{handler:handler}
-return self44
+  self48 := &WxServiceThriftProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
+  self48.processorMap["CallBack"] = &wxServiceThriftProcessorCallBack{handler:handler}
+  self48.processorMap["put"] = &wxServiceThriftProcessorPut{handler:handler}
+  self48.processorMap["GetAccessToken"] = &wxServiceThriftProcessorGetAccessToken{handler:handler}
+  self48.processorMap["GetJsapiTicket"] = &wxServiceThriftProcessorGetJsapiTicket{handler:handler}
+  self48.processorMap["JsapiSign"] = &wxServiceThriftProcessorJsapiSign{handler:handler}
+  self48.processorMap["IsWeixinServer"] = &wxServiceThriftProcessorIsWeixinServer{handler:handler}
+  self48.processorMap["ParseTemplateToMixedMessages"] = &wxServiceThriftProcessorParseTemplateToMixedMessages{handler:handler}
+  self48.processorMap["SendTmplateMessage"] = &wxServiceThriftProcessorSendTmplateMessage{handler:handler}
+  self48.processorMap["GetTextXml"] = &wxServiceThriftProcessorGetTextXml{handler:handler}
+  self48.processorMap["TransferCustomerService"] = &wxServiceThriftProcessorTransferCustomerService{handler:handler}
+  self48.processorMap["AuthCodeURL"] = &wxServiceThriftProcessorAuthCodeURL{handler:handler}
+  self48.processorMap["GetUserInfoBySnsapiBase"] = &wxServiceThriftProcessorGetUserInfoBySnsapiBase{handler:handler}
+  self48.processorMap["GetUserInfoBySnsapiUserinfo"] = &wxServiceThriftProcessorGetUserInfoBySnsapiUserinfo{handler:handler}
+  self48.processorMap["GetUserInfoByOpenid"] = &wxServiceThriftProcessorGetUserInfoByOpenid{handler:handler}
+  self48.processorMap["CreateMenu"] = &wxServiceThriftProcessorCreateMenu{handler:handler}
+  self48.processorMap["CreateMenuByJson"] = &wxServiceThriftProcessorCreateMenuByJson{handler:handler}
+  self48.processorMap["UnifiedOrder"] = &wxServiceThriftProcessorUnifiedOrder{handler:handler}
+  self48.processorMap["GetJsApiParameters"] = &wxServiceThriftProcessorGetJsApiParameters{handler:handler}
+  self48.processorMap["WxpayParseAndVerifySign"] = &wxServiceThriftProcessorWxpayParseAndVerifySign{handler:handler}
+  self48.processorMap["QrcodeShow"] = &wxServiceThriftProcessorQrcodeShow{handler:handler}
+  self48.processorMap["MaterialCount"] = &wxServiceThriftProcessorMaterialCount{handler:handler}
+  self48.processorMap["MaterialList"] = &wxServiceThriftProcessorMaterialList{handler:handler}
+  self48.processorMap["UpImage"] = &wxServiceThriftProcessorUpImage{handler:handler}
+  self48.processorMap["getAutoReplyXml"] = &wxServiceThriftProcessorGetAutoReplyXml{handler:handler}
+return self48
 }
 
 func (p *WxServiceThriftProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -1849,12 +2012,12 @@ func (p *WxServiceThriftProcessor) Process(iprot, oprot thrift.TProtocol) (succe
   }
   iprot.Skip(thrift.STRUCT)
   iprot.ReadMessageEnd()
-  x45 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function " + name)
+  x49 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function " + name)
   oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-  x45.Write(oprot)
+  x49.Write(oprot)
   oprot.WriteMessageEnd()
   oprot.Flush()
-  return false, x45
+  return false, x49
 
 }
 
@@ -2911,6 +3074,102 @@ var retval *Res
   return true, err
 }
 
+type wxServiceThriftProcessorUpImage struct {
+  handler WxServiceThrift
+}
+
+func (p *wxServiceThriftProcessorUpImage) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+  args := WxServiceThriftUpImageArgs{}
+  if err = args.Read(iprot); err != nil {
+    iprot.ReadMessageEnd()
+    x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+    oprot.WriteMessageBegin("UpImage", thrift.EXCEPTION, seqId)
+    x.Write(oprot)
+    oprot.WriteMessageEnd()
+    oprot.Flush()
+    return false, err
+  }
+
+  iprot.ReadMessageEnd()
+  result := WxServiceThriftUpImageResult{}
+var retval *WxImage
+  var err2 error
+  if retval, err2 = p.handler.UpImage(args.Utype, args.Filename); err2 != nil {
+    x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing UpImage: " + err2.Error())
+    oprot.WriteMessageBegin("UpImage", thrift.EXCEPTION, seqId)
+    x.Write(oprot)
+    oprot.WriteMessageEnd()
+    oprot.Flush()
+    return true, err2
+  } else {
+    result.Success = retval
+}
+  if err2 = oprot.WriteMessageBegin("UpImage", thrift.REPLY, seqId); err2 != nil {
+    err = err2
+  }
+  if err2 = result.Write(oprot); err == nil && err2 != nil {
+    err = err2
+  }
+  if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+    err = err2
+  }
+  if err2 = oprot.Flush(); err == nil && err2 != nil {
+    err = err2
+  }
+  if err != nil {
+    return
+  }
+  return true, err
+}
+
+type wxServiceThriftProcessorGetAutoReplyXml struct {
+  handler WxServiceThrift
+}
+
+func (p *wxServiceThriftProcessorGetAutoReplyXml) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+  args := WxServiceThriftGetAutoReplyXmlArgs{}
+  if err = args.Read(iprot); err != nil {
+    iprot.ReadMessageEnd()
+    x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+    oprot.WriteMessageBegin("getAutoReplyXml", thrift.EXCEPTION, seqId)
+    x.Write(oprot)
+    oprot.WriteMessageEnd()
+    oprot.Flush()
+    return false, err
+  }
+
+  iprot.ReadMessageEnd()
+  result := WxServiceThriftGetAutoReplyXmlResult{}
+var retval string
+  var err2 error
+  if retval, err2 = p.handler.GetAutoReplyXml(args.Text); err2 != nil {
+    x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing getAutoReplyXml: " + err2.Error())
+    oprot.WriteMessageBegin("getAutoReplyXml", thrift.EXCEPTION, seqId)
+    x.Write(oprot)
+    oprot.WriteMessageEnd()
+    oprot.Flush()
+    return true, err2
+  } else {
+    result.Success = &retval
+}
+  if err2 = oprot.WriteMessageBegin("getAutoReplyXml", thrift.REPLY, seqId); err2 != nil {
+    err = err2
+  }
+  if err2 = result.Write(oprot); err == nil && err2 != nil {
+    err = err2
+  }
+  if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+    err = err2
+  }
+  if err2 = oprot.Flush(); err == nil && err2 != nil {
+    err = err2
+  }
+  if err != nil {
+    return
+  }
+  return true, err
+}
+
 
 // HELPER FUNCTIONS AND STRUCTURES
 
@@ -3006,19 +3265,19 @@ func (p *WxServiceThriftCallBackArgs)  ReadField3(iprot thrift.TProtocol) error 
   tMap := make(map[string]string, size)
   p.ParamMap =  tMap
   for i := 0; i < size; i ++ {
-var _key46 string
+var _key50 string
     if v, err := iprot.ReadString(); err != nil {
     return thrift.PrependError("error reading field 0: ", err)
 } else {
-    _key46 = v
+    _key50 = v
 }
-var _val47 string
+var _val51 string
     if v, err := iprot.ReadString(); err != nil {
     return thrift.PrependError("error reading field 0: ", err)
 } else {
-    _val47 = v
+    _val51 = v
 }
-    p.ParamMap[_key46] = _val47
+    p.ParamMap[_key50] = _val51
   }
   if err := iprot.ReadMapEnd(); err != nil {
     return thrift.PrependError("error reading map end: ", err)
@@ -3147,13 +3406,13 @@ func (p *WxServiceThriftCallBackResult)  ReadField0(iprot thrift.TProtocol) erro
   tSlice := make([]string, 0, size)
   p.Success =  tSlice
   for i := 0; i < size; i ++ {
-var _elem48 string
+var _elem52 string
     if v, err := iprot.ReadString(); err != nil {
     return thrift.PrependError("error reading field 0: ", err)
 } else {
-    _elem48 = v
+    _elem52 = v
 }
-    p.Success = append(p.Success, _elem48)
+    p.Success = append(p.Success, _elem52)
   }
   if err := iprot.ReadListEnd(); err != nil {
     return thrift.PrependError("error reading list end: ", err)
@@ -7084,6 +7343,401 @@ func (p *WxServiceThriftMaterialListResult) String() string {
     return "<nil>"
   }
   return fmt.Sprintf("WxServiceThriftMaterialListResult(%+v)", *p)
+}
+
+// Attributes:
+//  - Utype
+//  - Filename
+type WxServiceThriftUpImageArgs struct {
+  Utype string `thrift:"utype,1" db:"utype" json:"utype"`
+  Filename string `thrift:"filename,2" db:"filename" json:"filename"`
+}
+
+func NewWxServiceThriftUpImageArgs() *WxServiceThriftUpImageArgs {
+  return &WxServiceThriftUpImageArgs{}
+}
+
+
+func (p *WxServiceThriftUpImageArgs) GetUtype() string {
+  return p.Utype
+}
+
+func (p *WxServiceThriftUpImageArgs) GetFilename() string {
+  return p.Filename
+}
+func (p *WxServiceThriftUpImageArgs) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 1:
+      if err := p.ReadField1(iprot); err != nil {
+        return err
+      }
+    case 2:
+      if err := p.ReadField2(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *WxServiceThriftUpImageArgs)  ReadField1(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(); err != nil {
+  return thrift.PrependError("error reading field 1: ", err)
+} else {
+  p.Utype = v
+}
+  return nil
+}
+
+func (p *WxServiceThriftUpImageArgs)  ReadField2(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(); err != nil {
+  return thrift.PrependError("error reading field 2: ", err)
+} else {
+  p.Filename = v
+}
+  return nil
+}
+
+func (p *WxServiceThriftUpImageArgs) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("UpImage_args"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField1(oprot); err != nil { return err }
+    if err := p.writeField2(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *WxServiceThriftUpImageArgs) writeField1(oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin("utype", thrift.STRING, 1); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:utype: ", p), err) }
+  if err := oprot.WriteString(string(p.Utype)); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.utype (1) field write error: ", p), err) }
+  if err := oprot.WriteFieldEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 1:utype: ", p), err) }
+  return err
+}
+
+func (p *WxServiceThriftUpImageArgs) writeField2(oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin("filename", thrift.STRING, 2); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:filename: ", p), err) }
+  if err := oprot.WriteString(string(p.Filename)); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.filename (2) field write error: ", p), err) }
+  if err := oprot.WriteFieldEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 2:filename: ", p), err) }
+  return err
+}
+
+func (p *WxServiceThriftUpImageArgs) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("WxServiceThriftUpImageArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - Success
+type WxServiceThriftUpImageResult struct {
+  Success *WxImage `thrift:"success,0" db:"success" json:"success,omitempty"`
+}
+
+func NewWxServiceThriftUpImageResult() *WxServiceThriftUpImageResult {
+  return &WxServiceThriftUpImageResult{}
+}
+
+var WxServiceThriftUpImageResult_Success_DEFAULT *WxImage
+func (p *WxServiceThriftUpImageResult) GetSuccess() *WxImage {
+  if !p.IsSetSuccess() {
+    return WxServiceThriftUpImageResult_Success_DEFAULT
+  }
+return p.Success
+}
+func (p *WxServiceThriftUpImageResult) IsSetSuccess() bool {
+  return p.Success != nil
+}
+
+func (p *WxServiceThriftUpImageResult) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 0:
+      if err := p.ReadField0(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *WxServiceThriftUpImageResult)  ReadField0(iprot thrift.TProtocol) error {
+  p.Success = &WxImage{}
+  if err := p.Success.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
+  }
+  return nil
+}
+
+func (p *WxServiceThriftUpImageResult) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("UpImage_result"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField0(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *WxServiceThriftUpImageResult) writeField0(oprot thrift.TProtocol) (err error) {
+  if p.IsSetSuccess() {
+    if err := oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err) }
+    if err := p.Success.Write(oprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Success), err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err) }
+  }
+  return err
+}
+
+func (p *WxServiceThriftUpImageResult) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("WxServiceThriftUpImageResult(%+v)", *p)
+}
+
+// Attributes:
+//  - Text
+type WxServiceThriftGetAutoReplyXmlArgs struct {
+  Text *AutoReplyData `thrift:"text,1" db:"text" json:"text"`
+}
+
+func NewWxServiceThriftGetAutoReplyXmlArgs() *WxServiceThriftGetAutoReplyXmlArgs {
+  return &WxServiceThriftGetAutoReplyXmlArgs{}
+}
+
+var WxServiceThriftGetAutoReplyXmlArgs_Text_DEFAULT *AutoReplyData
+func (p *WxServiceThriftGetAutoReplyXmlArgs) GetText() *AutoReplyData {
+  if !p.IsSetText() {
+    return WxServiceThriftGetAutoReplyXmlArgs_Text_DEFAULT
+  }
+return p.Text
+}
+func (p *WxServiceThriftGetAutoReplyXmlArgs) IsSetText() bool {
+  return p.Text != nil
+}
+
+func (p *WxServiceThriftGetAutoReplyXmlArgs) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 1:
+      if err := p.ReadField1(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *WxServiceThriftGetAutoReplyXmlArgs)  ReadField1(iprot thrift.TProtocol) error {
+  p.Text = &AutoReplyData{}
+  if err := p.Text.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Text), err)
+  }
+  return nil
+}
+
+func (p *WxServiceThriftGetAutoReplyXmlArgs) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("getAutoReplyXml_args"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField1(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *WxServiceThriftGetAutoReplyXmlArgs) writeField1(oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin("text", thrift.STRUCT, 1); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:text: ", p), err) }
+  if err := p.Text.Write(oprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Text), err)
+  }
+  if err := oprot.WriteFieldEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 1:text: ", p), err) }
+  return err
+}
+
+func (p *WxServiceThriftGetAutoReplyXmlArgs) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("WxServiceThriftGetAutoReplyXmlArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - Success
+type WxServiceThriftGetAutoReplyXmlResult struct {
+  Success *string `thrift:"success,0" db:"success" json:"success,omitempty"`
+}
+
+func NewWxServiceThriftGetAutoReplyXmlResult() *WxServiceThriftGetAutoReplyXmlResult {
+  return &WxServiceThriftGetAutoReplyXmlResult{}
+}
+
+var WxServiceThriftGetAutoReplyXmlResult_Success_DEFAULT string
+func (p *WxServiceThriftGetAutoReplyXmlResult) GetSuccess() string {
+  if !p.IsSetSuccess() {
+    return WxServiceThriftGetAutoReplyXmlResult_Success_DEFAULT
+  }
+return *p.Success
+}
+func (p *WxServiceThriftGetAutoReplyXmlResult) IsSetSuccess() bool {
+  return p.Success != nil
+}
+
+func (p *WxServiceThriftGetAutoReplyXmlResult) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 0:
+      if err := p.ReadField0(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *WxServiceThriftGetAutoReplyXmlResult)  ReadField0(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(); err != nil {
+  return thrift.PrependError("error reading field 0: ", err)
+} else {
+  p.Success = &v
+}
+  return nil
+}
+
+func (p *WxServiceThriftGetAutoReplyXmlResult) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("getAutoReplyXml_result"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField0(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *WxServiceThriftGetAutoReplyXmlResult) writeField0(oprot thrift.TProtocol) (err error) {
+  if p.IsSetSuccess() {
+    if err := oprot.WriteFieldBegin("success", thrift.STRING, 0); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err) }
+    if err := oprot.WriteString(string(*p.Success)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.success (0) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err) }
+  }
+  return err
+}
+
+func (p *WxServiceThriftGetAutoReplyXmlResult) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("WxServiceThriftGetAutoReplyXmlResult(%+v)", *p)
 }
 
 

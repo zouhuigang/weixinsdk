@@ -14,8 +14,8 @@ import (
 	"weixinsdk/src/logger"
 	zstorage "weixinsdk/src/storage"
 
+	"weixinsdk/src/lib"
 	"weixinsdk/src/structure"
-	"weixinsdk/src/utils"
 
 	"github.com/zouhuigang/mapstructure"
 	"github.com/zouhuigang/package/zhttp"
@@ -37,7 +37,7 @@ const m_JSAPI_TICKET_EXPIRES = 7200
 //得到token
 func GetJsapiTicket() (string, error) {
 
-	if !utils.CacheValid(MyJsapiTicket.Ticket, MyJsapiTicket.NowTimeStamp, MyJsapiTicket.Expires_in, 1200, "GetJsapiTicket") {
+	if !lib.CacheValid(MyJsapiTicket.Ticket, MyJsapiTicket.NowTimeStamp, MyJsapiTicket.Expires_in, 1200, "GetJsapiTicket") {
 		MyJsapiTicket, err = initJsapiTicket()
 	}
 
@@ -48,13 +48,13 @@ func initJsapiTicket() (structure.JsapiTicket, error) {
 
 	//读取storage中的数据
 	token := structure.JsapiTicket{}
-	err := utils.GetCacheFromStorageWithUnmarshal(m_JSAPI_TICKET_KEY, &token)
+	err := lib.GetCacheFromStorageWithUnmarshal(m_JSAPI_TICKET_KEY, &token)
 	if err != nil {
 		logger.MyLogger.Errorf(err.Error())
 		return token, err
 	}
 
-	if !utils.CacheValid(token.Ticket, token.NowTimeStamp, token.Expires_in, 1200, "initJsapiTicket") {
+	if !lib.CacheValid(token.Ticket, token.NowTimeStamp, token.Expires_in, 1200, "initJsapiTicket") {
 		logger.MyLogger.Info("weixin server get jsapi_ticket \n")
 		access_token, err := GetAccessToken()
 		if err != nil {

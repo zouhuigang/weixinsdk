@@ -1,4 +1,4 @@
-package utils
+package lib
 
 import (
 	z_weixin_service "weixinsdk/src/thrift_file/gen-go/tencent/weixin/service" //注意导入Thrift生成的接口包

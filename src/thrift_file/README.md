@@ -71,11 +71,29 @@ A：
 	go run main.go
 	即可解决问题。
 
+更换成mod之后，又遇到这个问题了,目前的解决方案:
+
+	go mod edit -replace=old[@v]=new[@v]
+	go list -m all
+	replace git.apache.org/thrift.git => git.apache.org/thrift.git 0.10.0
+
+原因:
+
+	google一下发现不少人碰到这个问题，但没有人给出如何解决；
+	仔细查阅资料，发现根本原因是thrift在git上的go包更新了增加对go 1.7中的http.request + context的用法，部分函数中增加了context参数；但是官网下载的0.11.0.tgz包并没有更新；所以不兼容无法编译
+
+
+其他解决方法,需要解决两个问题：
+
+	1. 更新thrift
+	从 https://github.com/apache/thrift 下载最新zip包，编译thrift；
+
+	2. 服务实现的时候，前面增加一个context.Context的参数；
 
 
 ### 参考文档
 
 [https://blog.csdn.net/lanyang123456/article/details/80372977](https://blog.csdn.net/lanyang123456/article/details/80372977)
-	
-	
+[https://github.com/apache/thrift/pull/1459](https://github.com/apache/thrift/pull/1459)
+[https://xuanwo.io/2019/05/27/go-modules/](https://xuanwo.io/2019/05/27/go-modules/)
 

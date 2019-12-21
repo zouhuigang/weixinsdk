@@ -1,15 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"log"
+	"weixinsdk/examples/controller"
 	zconfig "weixinsdk/src/config"
-	zstorage "weixinsdk/src/storage"
-	//注意导入Thrift生成的接口包
-	//zutils "weixinsdk/src/utils"
-	"weixinsdk/src/core/service"
 	"weixinsdk/src/logger"
-	//"github.com/sirupsen/logrus"
+	zstorage "weixinsdk/src/storage"
+
+	"github.com/labstack/echo"
 )
 
 func init() {
@@ -34,17 +32,11 @@ func init() {
 }
 
 func main() {
-	handler := &service.WxServiceThrift{}
-	//素材列表
-	s, err := handler.MaterialList()
-	if err != nil {
-	}
-	fmt.Println(s)
-
-	//素材总数
-	sb, err := handler.MaterialCount()
-	if err != nil {
-	}
-	fmt.Println(sb)
-
+	e := echo.New()
+	//静态文件
+	e.Static("/static", "tmp")
+	e.HideBanner = true
+	frontG := e.Group("")
+	controller.RegisterRoutes(frontG)
+	e.Logger.Fatal(e.Start("127.0.0.1:8080"))
 }
