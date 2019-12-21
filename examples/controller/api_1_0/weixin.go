@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"weixinsdk/examples/module"
 	zcore "weixinsdk/src/core/service"
 	z_weixin_service "weixinsdk/src/thrift_file/gen-go/tencent/weixin/service" //注意导入Thrift生成的接口包
 
@@ -117,27 +118,62 @@ func (this *WeixinApi) wx_callback(ctx echo.Context) error {
 			} else if contentText == "图文1" {
 				aList := make([]*z_weixin_service.ArticlesData, 0)
 				articlesData := z_weixin_service.NewArticlesData()
-				articlesData.Title = `这是标题`
-				articlesData.Description = `这是描述`
+				articlesData.Title = `大学英语四六级成绩查询`
+				articlesData.Description = `点击图片进入`
 				articlesData.URL = `https://www.baidu.com`
-				articlesData.PicUrl = `https://cdn-oss.yyang.net.cn/static/vue_image/huize_about.jpg`
+				articlesData.PicUrl = `http://img.365jia.cn/uploads/13/0301/.5130c2ff93618t2048l90.jpg`
 				aList = append(aList, articlesData)
 
-				articlesData2 := z_weixin_service.NewArticlesData()
-				articlesData2.Title = `这是标题2`
-				articlesData2.Description = `这是描述2`
-				articlesData2.URL = `https://www.baidu.com`
-				articlesData2.PicUrl = `https://cdn-oss.yyang.net.cn/static/vue_image/huize_about.jpg`
-				aList = append(aList, articlesData2)
+				// articlesData2 := z_weixin_service.NewArticlesData()
+				// articlesData2.Title = `这是标题2`
+				// articlesData2.Description = `这是描述2`
+				// articlesData2.URL = `https://www.baidu.com`
+				// articlesData2.PicUrl = `https://cdn-oss.yyang.net.cn/static/vue_image/huize_about.jpg`
+				// aList = append(aList, articlesData2)
 
 				autoReply := z_weixin_service.NewAutoReplyData()
 				autoReply.FromUserName = fromUserName
 				autoReply.ToUserName = toUserName
 				autoReply.MsgType = `news`
-				autoReply.ArticleCount = 2
+				autoReply.ArticleCount = int32(len(aList))
 				autoReply.Articles = aList
 				responeXmlStr, _ = handler.GetAutoReplyXml(autoReply)
 				fmt.Println(responeXmlStr)
+			} else if contentText == "客服1" {
+
+				kfmsg := `{
+					"touser": "` + toUserName + `",
+					"msgtype": "image",
+					"image": {
+						"media_id": "iZfVswoy_wsLl4zaxcs2j7Y7px49j9JBvyFQ-xsJEQY"
+					}
+				}`
+				//res, _ := handler.KefuSend([]byte(kfmsg))
+
+				kfmsg2 := `{
+					"touser": "` + toUserName + `",
+					"msgtype":"news",
+					"news":{
+						"articles": [
+						 {
+							 "title":"大学英语四六级成绩查询",
+							 "description":"点击图片进入",
+							 "url":"https://www.baidu.com",
+							 "picurl":"http://img.365jia.cn/uploads/13/0301/.5130c2ff93618t2048l90.jpg"
+						 }
+						 ]
+					}
+				}`
+				//res, _ = handler.KefuSend([]byte(kfmsg2))
+				//fmt.Println(res)
+				mkefu := new(module.KeFu)
+				count, err := mkefu.WithCreate(handler).WithSendImage(kfmsg).WithSendText(kfmsg2).SuccessCount()
+				if err != nil {
+					panic(err)
+				}
+
+				contentText = fmt.Sprintf("成功的数量:%d", count)
+				responeXmlStr, _ = handler.GetTextXml(fromUserName, toUserName, contentText)
 			} else {
 				responeXmlStr, _ = handler.GetTextXml(fromUserName, toUserName, contentText)
 			}

@@ -171,3 +171,17 @@ func (this *WxServiceThrift) GetAutoReplyXml(msg *z_weixin_service.AutoReplyData
 // 		Content:             msg.Content,
 // 	}
 // }
+
+//客服发消息
+func (this *WxServiceThrift) KefuSend(messageJsonBytes []byte) (*z_weixin_service.KefuData, error) {
+	response := z_weixin_service.NewKefuData()
+	access_token, err := zcache.GetAccessToken()
+	if err != nil {
+		return nil, err
+	}
+
+	requrl := fmt.Sprintf("%s?access_token=%s", zconfig.SERVICE_APIURL_KEFU_SEND, access_token)
+	err = zhttp.POSTWithUnmarshal(requrl, messageJsonBytes, response)
+
+	return response, err
+}

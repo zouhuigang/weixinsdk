@@ -27,4 +27,6 @@ const (
 	SERVICE_APIURL_MATERIAL_COUNT = `https://api.weixin.qq.com/cgi-bin/material/get_materialcount`
 	//上传素材
 	SERVICE_APIURL_MATERIAL_ADD = `https://api.weixin.qq.com/cgi-bin/material/add_material`
+	//客服发消息
+	SERVICE_APIURL_KEFU_SEND = `https://api.weixin.qq.com/cgi-bin/message/custom/send`
 )

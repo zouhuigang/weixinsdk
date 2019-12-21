@@ -2481,3 +2481,148 @@ func (p *ArticlesData) String() string {
   return fmt.Sprintf("ArticlesData(%+v)", *p)
 }
 
+// Attributes:
+//  - Errcode
+//  - Errmsg
+//  - MsgID
+type KefuData struct {
+  Errcode int32 `thrift:"Errcode,1" db:"Errcode" json:"Errcode"`
+  Errmsg string `thrift:"Errmsg,2" db:"Errmsg" json:"Errmsg"`
+  MsgID int64 `thrift:"MsgID,3" db:"MsgID" json:"MsgID"`
+}
+
+func NewKefuData() *KefuData {
+  return &KefuData{}
+}
+
+
+func (p *KefuData) GetErrcode() int32 {
+  return p.Errcode
+}
+
+func (p *KefuData) GetErrmsg() string {
+  return p.Errmsg
+}
+
+func (p *KefuData) GetMsgID() int64 {
+  return p.MsgID
+}
+func (p *KefuData) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 1:
+      if err := p.ReadField1(iprot); err != nil {
+        return err
+      }
+    case 2:
+      if err := p.ReadField2(iprot); err != nil {
+        return err
+      }
+    case 3:
+      if err := p.ReadField3(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *KefuData)  ReadField1(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI32(); err != nil {
+  return thrift.PrependError("error reading field 1: ", err)
+} else {
+  p.Errcode = v
+}
+  return nil
+}
+
+func (p *KefuData)  ReadField2(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(); err != nil {
+  return thrift.PrependError("error reading field 2: ", err)
+} else {
+  p.Errmsg = v
+}
+  return nil
+}
+
+func (p *KefuData)  ReadField3(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI64(); err != nil {
+  return thrift.PrependError("error reading field 3: ", err)
+} else {
+  p.MsgID = v
+}
+  return nil
+}
+
+func (p *KefuData) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("KefuData"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField1(oprot); err != nil { return err }
+    if err := p.writeField2(oprot); err != nil { return err }
+    if err := p.writeField3(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *KefuData) writeField1(oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin("Errcode", thrift.I32, 1); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:Errcode: ", p), err) }
+  if err := oprot.WriteI32(int32(p.Errcode)); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.Errcode (1) field write error: ", p), err) }
+  if err := oprot.WriteFieldEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 1:Errcode: ", p), err) }
+  return err
+}
+
+func (p *KefuData) writeField2(oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin("Errmsg", thrift.STRING, 2); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:Errmsg: ", p), err) }
+  if err := oprot.WriteString(string(p.Errmsg)); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.Errmsg (2) field write error: ", p), err) }
+  if err := oprot.WriteFieldEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 2:Errmsg: ", p), err) }
+  return err
+}
+
+func (p *KefuData) writeField3(oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin("MsgID", thrift.I64, 3); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:MsgID: ", p), err) }
+  if err := oprot.WriteI64(int64(p.MsgID)); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.MsgID (3) field write error: ", p), err) }
+  if err := oprot.WriteFieldEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 3:MsgID: ", p), err) }
+  return err
+}
+
+func (p *KefuData) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("KefuData(%+v)", *p)
+}
+
