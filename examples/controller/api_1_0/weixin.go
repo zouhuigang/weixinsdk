@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"weixinsdk/examples/module"
 	zcore "weixinsdk/src/core/service"
 	z_weixin_service "weixinsdk/src/thrift_file/gen-go/tencent/weixin/service" //注意导入Thrift生成的接口包
 
@@ -138,6 +139,41 @@ func (this *WeixinApi) wx_callback(ctx echo.Context) error {
 				autoReply.Articles = aList
 				responeXmlStr, _ = handler.GetAutoReplyXml(autoReply)
 				fmt.Println(responeXmlStr)
+			} else if contentText == "客服1" {
+
+				kfmsg := `{
+					"touser": "` + toUserName + `",
+					"msgtype": "image",
+					"image": {
+						"media_id": "iZfVswoy_wsLl4zaxcs2j7Y7px49j9JBvyFQ-xsJEQY"
+					}
+				}`
+				//res, _ := handler.KefuSend([]byte(kfmsg))
+
+				kfmsg2 := `{
+					"touser": "` + toUserName + `",
+					"msgtype":"news",
+					"news":{
+						"articles": [
+						 {
+							 "title":"大学英语四六级成绩查询",
+							 "description":"点击图片进入",
+							 "url":"https://www.baidu.com",
+							 "picurl":"http://img.365jia.cn/uploads/13/0301/.5130c2ff93618t2048l90.jpg"
+						 }
+						 ]
+					}
+				}`
+				//res, _ = handler.KefuSend([]byte(kfmsg2))
+				//fmt.Println(res)
+				mkefu := new(module.KeFu)
+				count, err := mkefu.WithCreate(handler).WithSendImage(kfmsg).WithSendText(kfmsg2).SuccessCount()
+				if err != nil {
+					panic(err)
+				}
+
+				contentText = fmt.Sprintf("成功的数量:%d", count)
+				responeXmlStr, _ = handler.GetTextXml(fromUserName, toUserName, contentText)
 			} else {
 				responeXmlStr, _ = handler.GetTextXml(fromUserName, toUserName, contentText)
 			}

@@ -110,3 +110,10 @@ struct ArticlesData{
 	3:string PicUrl
 	4:string Url
 }
+
+//客服发送消息
+struct KefuData{
+	1:i32 Errcode
+	2:string Errmsg
+	3:i64 MsgID
+}
