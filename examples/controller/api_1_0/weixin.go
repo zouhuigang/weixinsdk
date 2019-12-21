@@ -117,24 +117,24 @@ func (this *WeixinApi) wx_callback(ctx echo.Context) error {
 			} else if contentText == "图文1" {
 				aList := make([]*z_weixin_service.ArticlesData, 0)
 				articlesData := z_weixin_service.NewArticlesData()
-				articlesData.Title = `这是标题`
-				articlesData.Description = `这是描述`
+				articlesData.Title = `大学英语四六级成绩查询`
+				articlesData.Description = `点击图片进入`
 				articlesData.URL = `https://www.baidu.com`
-				articlesData.PicUrl = `https://cdn-oss.yyang.net.cn/static/vue_image/huize_about.jpg`
+				articlesData.PicUrl = `http://img.365jia.cn/uploads/13/0301/.5130c2ff93618t2048l90.jpg`
 				aList = append(aList, articlesData)
 
-				articlesData2 := z_weixin_service.NewArticlesData()
-				articlesData2.Title = `这是标题2`
-				articlesData2.Description = `这是描述2`
-				articlesData2.URL = `https://www.baidu.com`
-				articlesData2.PicUrl = `https://cdn-oss.yyang.net.cn/static/vue_image/huize_about.jpg`
-				aList = append(aList, articlesData2)
+				// articlesData2 := z_weixin_service.NewArticlesData()
+				// articlesData2.Title = `这是标题2`
+				// articlesData2.Description = `这是描述2`
+				// articlesData2.URL = `https://www.baidu.com`
+				// articlesData2.PicUrl = `https://cdn-oss.yyang.net.cn/static/vue_image/huize_about.jpg`
+				// aList = append(aList, articlesData2)
 
 				autoReply := z_weixin_service.NewAutoReplyData()
 				autoReply.FromUserName = fromUserName
 				autoReply.ToUserName = toUserName
 				autoReply.MsgType = `news`
-				autoReply.ArticleCount = 2
+				autoReply.ArticleCount = int32(len(aList))
 				autoReply.Articles = aList
 				responeXmlStr, _ = handler.GetAutoReplyXml(autoReply)
 				fmt.Println(responeXmlStr)
