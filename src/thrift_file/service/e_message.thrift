@@ -85,3 +85,28 @@ struct SendTemplateResponseData {
 	2:string Errmsg
 	3:i64 MsgID
 }
+
+//回复给微信的消息
+struct AutoReplyData{
+	1:string ToUserName
+	2:string FromUserName
+	3:i64 CreateTime
+	4:string MsgType
+	5:string Content
+	6:ImageData Image
+	7:i32 ArticleCount
+	8:list<ArticlesData> Articles
+}
+
+//图片消息
+struct ImageData{
+	1:string MediaId
+}
+
+//图文消息
+struct ArticlesData{
+	1:string Title
+	2:string Description
+	3:string PicUrl
+	4:string Url
+}

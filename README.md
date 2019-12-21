@@ -1,9 +1,5 @@
 ### 微信sdk
 
-![images](./doc/weixin.svg)
-
-
-
 ### 优势
 
 - 支持多语言调用。

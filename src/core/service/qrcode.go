@@ -5,6 +5,7 @@ import (
 	zcache "weixinsdk/src/cache"
 	zconfig "weixinsdk/src/config"
 	"weixinsdk/src/logger"
+	z_weixin_service "weixinsdk/src/thrift_file/gen-go/tencent/weixin/service"
 
 	"github.com/zouhuigang/package/zhttp"
 )
@@ -41,17 +42,23 @@ func qrcodeCreate(qrJsonBytes []byte) (*QrResponse, error) {
 	return response, nil
 }
 
-func (this *WxServiceThrift) QrcodeShow(qrJsonBytes []byte) (string, error) {
+func (this *WxServiceThrift) QrcodeShow(qrJsonBytes []byte) (*z_weixin_service.QrRespone, error) {
 	//menuJsonByte := bytes.NewReader(menuJsonBytes)
+	response := z_weixin_service.NewQrRespone()
+	response.ReqContent = string(qrJsonBytes) //请求的内容
 	logger.MyLogger.Debug("QrcodeShow:" + string(qrJsonBytes))
 
 	//获取ticket
 	qrResponse, err := qrcodeCreate(qrJsonBytes)
 	if err != nil {
-		return "", err
+		return response, err
 	}
 
 	qrUrl := fmt.Sprintf("%s?ticket=%s", zconfig.SERVICE_APIURL_QRCODE_SHOW, qrResponse.Ticket)
+	response.URL = qrUrl                                     //二维码网址
+	response.Content = qrResponse.Url                        //二维码内容
+	response.ExpireSeconds = int32(qrResponse.ExpireSeconds) //该二维码有效时间，以秒为单位。 最大不超过2592000(即30天)
 
-	return qrUrl, nil
+	logger.MyLogger.Debug("QrcodeShow content:" + string(response.Content))
+	return response, nil
 }

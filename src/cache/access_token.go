@@ -26,9 +26,9 @@ import (
 	"errors"
 	"fmt"
 	zconfig "weixinsdk/src/config"
+	"weixinsdk/src/lib"
 	"weixinsdk/src/logger"
 	zstorage "weixinsdk/src/storage"
-	"weixinsdk/src/utils"
 
 	"weixinsdk/src/structure"
 
@@ -55,7 +55,7 @@ const m_ACCESS_TOKEN_EXPIRES = 7200
 //得到token
 func GetAccessToken() (string, error) {
 	logger.MyLogger.Debug("GetAccessToken 1")
-	if !utils.CacheValid(MyAccessToken.Access_token, MyAccessToken.NowTimeStamp, MyAccessToken.Expires_in, 1200, "GetAccessToken") {
+	if !lib.CacheValid(MyAccessToken.Access_token, MyAccessToken.NowTimeStamp, MyAccessToken.Expires_in, 1200, "GetAccessToken") {
 		logger.MyLogger.Debug("GetAccessToken 2")
 		MyAccessToken, err = initAccessToken()
 	}
@@ -69,7 +69,7 @@ func initAccessToken() (structure.AccessToken, error) {
 	token := structure.AccessToken{}
 
 	//从缓存中读取值，如果存在，则还需要判断缓存是否有效
-	err := utils.GetCacheFromStorageWithUnmarshal(m_ACCESS_TOKEN_KEY, &token)
+	err := lib.GetCacheFromStorageWithUnmarshal(m_ACCESS_TOKEN_KEY, &token)
 	if err != nil {
 		msg := fmt.Sprintf("initAccessToken GetCacheFromStorageWithUnmarshal  error: %s", err.Error())
 		logger.MyLogger.Error(msg)
@@ -78,7 +78,7 @@ func initAccessToken() (structure.AccessToken, error) {
 
 	logger.MyLogger.Debug("initAccessToken2")
 
-	if !utils.CacheValid(token.Access_token, token.NowTimeStamp, token.Expires_in, 1200, "initAccessToken") {
+	if !lib.CacheValid(token.Access_token, token.NowTimeStamp, token.Expires_in, 1200, "initAccessToken") {
 		//fmt.Println("====================")
 		logger.MyLogger.Debug("initAccessToken3")
 		var m_AppSecret string = zconfig.CFG.MustValue("service", "AppSecret", "")

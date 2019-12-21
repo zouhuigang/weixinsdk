@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"weixinsdk/example/rpc-thrift/golang/utils"
-	z_weixin_service "weixinsdk/src/thrift_file/gen-go/weixin/service" //注意导入Thrift生成的接口包
+	zcore "weixinsdk/src/core/service"
+	z_weixin_service "weixinsdk/src/thrift_file/gen-go/tencent/weixin/service" //注意导入Thrift生成的接口包
 
 	"github.com/labstack/echo"
 )
@@ -15,7 +15,7 @@ type WeixinApi struct{}
 
 const (
 	token  = "weixin" //设置token
-	WEBURL = "http://dki4r6.natappfree.cc/"
+	WEBURL = "http://4ggmu7.natappfree.cc/"
 )
 
 var weixinApi = WeixinApi{}
@@ -38,17 +38,16 @@ func (this *WeixinApi) RegisterRoute(g *echo.Group) {
 另外，请注意，回复图片（不支持gif动图）等多媒体消息时需要预先通过素材管理接口上传临时素材到微信服务器，可以使用素材管理中的临时素材，也可以使用永久素材。
 */
 func (this *WeixinApi) wx_callback(ctx echo.Context) error {
+	handler := &zcore.WxServiceThrift{}
 
 	method := ctx.Request().Method
-	wxServerClient, transport := utils.GetWxServerClient()
-	defer transport.Close()
 	if method == "GET" {
 		timestamp := ctx.FormValue("timestamp")
 		nonce := ctx.FormValue("nonce")
 		signature := ctx.FormValue("signature")
 		echostr := ctx.FormValue("echostr")
 
-		wx, err := wxServerClient.IsWeixinServer(token, echostr, signature, timestamp, nonce)
+		wx, err := handler.IsWeixinServer(token, echostr, signature, timestamp, nonce)
 		if err != nil {
 
 		}
@@ -68,7 +67,7 @@ func (this *WeixinApi) wx_callback(ctx echo.Context) error {
 		if len(body) == 0 {
 			return ctx.String(http.StatusOK, "")
 		}
-		mixMessage, err := wxServerClient.ParseTemplateToMixedMessages(string(body))
+		mixMessage, err := handler.ParseTemplateToMixedMessages(string(body))
 		//SendTmplateMessage
 		if err != nil {
 			return ctx.String(http.StatusOK, "消息解析失败")
@@ -93,15 +92,58 @@ func (this *WeixinApi) wx_callback(ctx echo.Context) error {
 				templateMsg.FormID = mixMessage.ResponeMessage.ToUserName
 				templateMsg.Touser = mixMessage.ResponeMessage.FromUserName
 				templateMsg.TemplateID = "byP6PqRaW34ZSxKXE4eZOX1TCBSbZiWZiFfoYJPxN9Y"
-				respone, err := wxServerClient.SendTmplateMessage(templateMsg)
+				respone, err := handler.SendTmplateMessage(templateMsg)
 				fmt.Println(respone, err)
-			} else {
-				responeXmlStr, _ = wxServerClient.GetTextXml(fromUserName, toUserName, contentText)
+			} else if contentText == "素材数量" {
+				resCoun, _ := handler.MaterialCount()
+				contentText = fmt.Sprintf("【永久素材数量】语音:%d-视频:%d-图片:%d-图文:%d:", resCoun.VoiceCount, resCoun.VideoCount, resCoun.ImageCount, resCoun.NewsCount_)
+				responeXmlStr, _ = handler.GetTextXml(fromUserName, toUserName, contentText)
+			} else if contentText == "上传素材" {
+				resU, _ := handler.UpImage(`image`, `D:\多可德更新\陪诊关注推送图\多可德推图1.jpg`)
+				fmt.Println(resU)
+				contentText = fmt.Sprintf("【上传图片】media_id:%s", resU.MediaID)
+				responeXmlStr, _ = handler.GetTextXml(fromUserName, toUserName, contentText)
+			} else if contentText == "图片1" {
+				imageData := z_weixin_service.NewImageData()
+				imageData.MediaId = `iZfVswoy_wsLl4zaxcs2j7Y7px49j9JBvyFQ-xsJEQY`
 
+				autoReply := z_weixin_service.NewAutoReplyData()
+				autoReply.FromUserName = fromUserName
+				autoReply.ToUserName = toUserName
+				autoReply.MsgType = `image`
+				autoReply.Image = imageData
+				responeXmlStr, _ = handler.GetAutoReplyXml(autoReply)
+				fmt.Println(responeXmlStr)
+			} else if contentText == "图文1" {
+				aList := make([]*z_weixin_service.ArticlesData, 0)
+				articlesData := z_weixin_service.NewArticlesData()
+				articlesData.Title = `这是标题`
+				articlesData.Description = `这是描述`
+				articlesData.URL = `https://www.baidu.com`
+				articlesData.PicUrl = `https://cdn-oss.yyang.net.cn/static/vue_image/huize_about.jpg`
+				aList = append(aList, articlesData)
+
+				articlesData2 := z_weixin_service.NewArticlesData()
+				articlesData2.Title = `这是标题2`
+				articlesData2.Description = `这是描述2`
+				articlesData2.URL = `https://www.baidu.com`
+				articlesData2.PicUrl = `https://cdn-oss.yyang.net.cn/static/vue_image/huize_about.jpg`
+				aList = append(aList, articlesData2)
+
+				autoReply := z_weixin_service.NewAutoReplyData()
+				autoReply.FromUserName = fromUserName
+				autoReply.ToUserName = toUserName
+				autoReply.MsgType = `news`
+				autoReply.ArticleCount = 2
+				autoReply.Articles = aList
+				responeXmlStr, _ = handler.GetAutoReplyXml(autoReply)
+				fmt.Println(responeXmlStr)
+			} else {
+				responeXmlStr, _ = handler.GetTextXml(fromUserName, toUserName, contentText)
 			}
 
 		} else if mixMessage.ResponeMessageType == "image" { //转发给客服
-			responeXmlStr, _ = wxServerClient.TransferCustomerService(fromUserName, toUserName, "")
+			responeXmlStr, _ = handler.TransferCustomerService(fromUserName, toUserName, "")
 			fmt.Println("微信", responeXmlStr)
 
 		}
@@ -113,13 +155,12 @@ func (this *WeixinApi) wx_callback(ctx echo.Context) error {
 
 //微信回调
 func (this *WeixinApi) snsapi_base_page1(ctx echo.Context) error {
-	wxServerClient, transport := utils.GetWxServerClient()
-	defer transport.Close()
+	handler := &zcore.WxServiceThrift{}
 
 	//构造跳转链接
 	redirectURL := fmt.Sprintf("%sweixin/snsapi_base/page2", WEBURL)
 	scope := "snsapi_base"
-	authData, _ := wxServerClient.AuthCodeURL(redirectURL, scope)
+	authData, _ := handler.AuthCodeURL(redirectURL, scope)
 
 	fmt.Println("可以将state保存在cookie中,在下一个页面验证url中的state和保存的是否一致", authData.State)
 	//ctx.Redirect(301, "/welcome")/
@@ -127,14 +168,13 @@ func (this *WeixinApi) snsapi_base_page1(ctx echo.Context) error {
 }
 
 func (this *WeixinApi) snsapi_base_page2(ctx echo.Context) error {
-	wxServerClient, transport := utils.GetWxServerClient()
-	defer transport.Close()
+	handler := &zcore.WxServiceThrift{}
 
 	var code string = ctx.FormValue("code")
 	if code == "" {
 		return ctx.String(http.StatusOK, "客户禁止授权")
 	}
-	userinfo, err := wxServerClient.GetUserInfoBySnsapiBase(code)
+	userinfo, err := handler.GetUserInfoBySnsapiBase(code)
 	if err != nil {
 		return ctx.String(http.StatusOK, "无感授权失败"+err.Error())
 	}
@@ -147,13 +187,12 @@ func (this *WeixinApi) snsapi_base_page2(ctx echo.Context) error {
 }
 
 func (this *WeixinApi) snsapi_userinfo_page1(ctx echo.Context) error {
-	wxServerClient, transport := utils.GetWxServerClient()
-	defer transport.Close()
+	handler := &zcore.WxServiceThrift{}
 
 	//构造跳转链接
 	redirectURL := fmt.Sprintf("%sweixin/snsapi_base/page2", WEBURL)
 	scope := "snsapi_userinfo"
-	authData, _ := wxServerClient.AuthCodeURL(redirectURL, scope)
+	authData, _ := handler.AuthCodeURL(redirectURL, scope)
 
 	fmt.Println("可以将state保存在cookie中,在下一个页面验证url中的state和保存的是否一致", authData.State)
 	//ctx.Redirect(301, "/welcome")/
@@ -161,8 +200,7 @@ func (this *WeixinApi) snsapi_userinfo_page1(ctx echo.Context) error {
 }
 
 func (this *WeixinApi) snsapi_userinfo_page2(ctx echo.Context) error {
-	wxServerClient, transport := utils.GetWxServerClient()
-	defer transport.Close()
+	handler := &zcore.WxServiceThrift{}
 
 	var code string = ctx.FormValue("code")
 	fmt.Println("code", code)
@@ -170,7 +208,7 @@ func (this *WeixinApi) snsapi_userinfo_page2(ctx echo.Context) error {
 		return ctx.String(http.StatusOK, "客户禁止授权")
 	}
 
-	userinfo, err := wxServerClient.GetUserInfoBySnsapiUserinfo(code)
+	userinfo, err := handler.GetUserInfoBySnsapiUserinfo(code)
 	if err != nil {
 		return ctx.String(http.StatusOK, "用户授权失败"+err.Error())
 	}

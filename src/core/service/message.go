@@ -125,6 +125,45 @@ func (this *WxServiceThrift) GetTextXml(fromUserName, toUserName, content string
 
 }
 
+//自动回复
+func (this *WxServiceThrift) GetAutoReplyXml(msg *z_weixin_service.AutoReplyData) (string, error) {
+	var new_msg structure.WxAutoReply
+	new_msg.MsgType = msg.MsgType
+	new_msg.FromUserName = msg.FromUserName
+	new_msg.ToUserName = msg.ToUserName
+	new_msg.Content = msg.Content
+	new_msg.ArticleCount = msg.ArticleCount
+	new_msg.CreateTime = ztime.NowTimeStamp()
+
+	if msg.Image != nil {
+		mImage := structure.Image{}
+		mImage.MediaId = msg.Image.MediaId
+		new_msg.Image = mImage
+	}
+
+	if msg.Articles != nil {
+		mArticlesList := structure.Articles{}
+		mArticles := make([]structure.Item, 0)
+		for _, v := range msg.Articles {
+			mItem := structure.Item{}
+			mItem.Title = v.Title
+			mItem.Description = v.Description
+			mItem.PicUrl = v.PicUrl
+			mItem.Url = v.URL
+			mArticles = append(mArticles, mItem)
+		}
+		mArticlesList.Item = mArticles
+		new_msg.Articles = mArticlesList
+
+	}
+
+	data, err := xml.MarshalIndent(&new_msg, "", "  ")
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
 //发送消息
 // func (this *WxServiceThrift) GetText(msg *structure.MixedMessage) *structure.WxMsgTxt {
 // 	return &structure.WxMsgTxt{

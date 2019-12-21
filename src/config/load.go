@@ -5,15 +5,19 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
 	"strings"
+	zutils "weixinsdk/src/utils"
 
 	"github.com/Unknwon/goconfig"
+	"github.com/zouhuigang/golog"
 )
 
 var (
-	CFG  *goconfig.ConfigFile
-	ROOT string
+	CFG     *goconfig.ConfigFile
+	ROOT    string
+	CmdRoot string
 )
 
 // fileExist 检查文件或目录是否存在,如果由 filename 指定的文件或目录存在则返回 true，否则返回 false
@@ -25,7 +29,7 @@ func fileExist(filename string) bool {
 //核对文件路径
 func checkFileExist(name string) (new_name string, err error) {
 	//go run 时路径在运行环境，所以需要校正
-	new_name = ROOT + name
+	new_name = path.Join(ROOT, name)
 	if !fileExist(new_name) {
 		curDir, _ := os.Getwd()
 		pos := strings.LastIndex(curDir, "src")
@@ -34,7 +38,7 @@ func checkFileExist(name string) (new_name string, err error) {
 		}
 
 		ROOT = curDir[:pos]
-		new_name = ROOT + name
+		new_name = path.Join(ROOT, name)
 	}
 
 	return new_name, nil
@@ -74,7 +78,26 @@ func Load() error {
 	if err != nil {
 		return errors.New("binary abs path error")
 	}
-	ROOT = filepath.Dir(binaryPath)
+	ROOT = filepath.Dir(binaryPath) + "/"
+
+	//sql模板路径
+	envConFile := ROOT + `build/base.env.ini`
+	if !fileExist(envConFile) {
+		curDir, _ := os.Getwd()
+		pos := strings.LastIndex(curDir, "examples")
+		if pos == -1 {
+			pos = strings.LastIndex(curDir, "src")
+		}
+		if pos == -1 {
+			return errors.New("can't find  error. " + envConFile)
+		}
+		ROOT = curDir[:pos]
+	}
+
+	CmdRoot = zutils.GetCurrentDirectory()
+
+	golog.Info("Root path:" + ROOT)
+	golog.Info("CmdRoot path:" + CmdRoot)
 
 	//加载base文件
 	baseFile := `/build/base.env.ini`
