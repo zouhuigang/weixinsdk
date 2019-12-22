@@ -16,7 +16,7 @@ type WeixinApi struct{}
 
 const (
 	token  = "weixin" //设置token
-	WEBURL = "http://4ggmu7.natappfree.cc/"
+	WEBURL = "http://xxi325.natappfree.cc/"
 )
 
 var weixinApi = WeixinApi{}

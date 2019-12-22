@@ -52,7 +52,7 @@ service WxServiceThrift{
 		//二维码生成
 		e_qrcode.QrRespone QrcodeShow(1:binary qrJsonBytes),
 		e_material.MaCount MaterialCount(),
-		e_material.Res MaterialList(),
+		e_material.Res MaterialList(1:string types, 2:i64 page, 3:i64 pageSize),
 		e_material.WxImage UpImage(1:string utype, 2:string filename),
 		//自动回复函数,暂时还有个getTextXml没有干掉
 		string getAutoReplyXml(1:e_message.AutoReplyData text),

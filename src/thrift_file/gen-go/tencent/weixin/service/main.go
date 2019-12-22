@@ -84,7 +84,11 @@ type WxServiceThrift interface {
   //  - QrJsonBytes
   QrcodeShow(qrJsonBytes []byte) (r *QrRespone, err error)
   MaterialCount() (r *MaCount, err error)
-  MaterialList() (r *Res, err error)
+  // Parameters:
+  //  - Types
+  //  - Page
+  //  - PageSize
+  MaterialList(types string, page int64, pageSize int64) (r *Res, err error)
   // Parameters:
   //  - Utype
   //  - Filename
@@ -1731,12 +1735,16 @@ func (p *WxServiceThriftClient) recvMaterialCount() (value *MaCount, err error) 
   return
 }
 
-func (p *WxServiceThriftClient) MaterialList() (r *Res, err error) {
-  if err = p.sendMaterialList(); err != nil { return }
+// Parameters:
+//  - Types
+//  - Page
+//  - PageSize
+func (p *WxServiceThriftClient) MaterialList(types string, page int64, pageSize int64) (r *Res, err error) {
+  if err = p.sendMaterialList(types, page, pageSize); err != nil { return }
   return p.recvMaterialList()
 }
 
-func (p *WxServiceThriftClient) sendMaterialList()(err error) {
+func (p *WxServiceThriftClient) sendMaterialList(types string, page int64, pageSize int64)(err error) {
   oprot := p.OutputProtocol
   if oprot == nil {
     oprot = p.ProtocolFactory.GetProtocol(p.Transport)
@@ -1747,6 +1755,9 @@ func (p *WxServiceThriftClient) sendMaterialList()(err error) {
       return
   }
   args := WxServiceThriftMaterialListArgs{
+  Types : types,
+  Page : page,
+  PageSize : pageSize,
   }
   if err = args.Write(oprot); err != nil {
       return
@@ -3126,7 +3137,7 @@ func (p *wxServiceThriftProcessorMaterialList) Process(seqId int32, iprot, oprot
   result := WxServiceThriftMaterialListResult{}
 var retval *Res
   var err2 error
-  if retval, err2 = p.handler.MaterialList(); err2 != nil {
+  if retval, err2 = p.handler.MaterialList(args.Types, args.Page, args.PageSize); err2 != nil {
     x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing MaterialList: " + err2.Error())
     oprot.WriteMessageBegin("MaterialList", thrift.EXCEPTION, seqId)
     x.Write(oprot)
@@ -7328,13 +7339,32 @@ func (p *WxServiceThriftMaterialCountResult) String() string {
   return fmt.Sprintf("WxServiceThriftMaterialCountResult(%+v)", *p)
 }
 
+// Attributes:
+//  - Types
+//  - Page
+//  - PageSize
 type WxServiceThriftMaterialListArgs struct {
+  Types string `thrift:"types,1" db:"types" json:"types"`
+  Page int64 `thrift:"page,2" db:"page" json:"page"`
+  PageSize int64 `thrift:"pageSize,3" db:"pageSize" json:"pageSize"`
 }
 
 func NewWxServiceThriftMaterialListArgs() *WxServiceThriftMaterialListArgs {
   return &WxServiceThriftMaterialListArgs{}
 }
 
+
+func (p *WxServiceThriftMaterialListArgs) GetTypes() string {
+  return p.Types
+}
+
+func (p *WxServiceThriftMaterialListArgs) GetPage() int64 {
+  return p.Page
+}
+
+func (p *WxServiceThriftMaterialListArgs) GetPageSize() int64 {
+  return p.PageSize
+}
 func (p *WxServiceThriftMaterialListArgs) Read(iprot thrift.TProtocol) error {
   if _, err := iprot.ReadStructBegin(); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
@@ -7347,8 +7377,23 @@ func (p *WxServiceThriftMaterialListArgs) Read(iprot thrift.TProtocol) error {
       return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
     }
     if fieldTypeId == thrift.STOP { break; }
-    if err := iprot.Skip(fieldTypeId); err != nil {
-      return err
+    switch fieldId {
+    case 1:
+      if err := p.ReadField1(iprot); err != nil {
+        return err
+      }
+    case 2:
+      if err := p.ReadField2(iprot); err != nil {
+        return err
+      }
+    case 3:
+      if err := p.ReadField3(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
     }
     if err := iprot.ReadFieldEnd(); err != nil {
       return err
@@ -7360,16 +7405,76 @@ func (p *WxServiceThriftMaterialListArgs) Read(iprot thrift.TProtocol) error {
   return nil
 }
 
+func (p *WxServiceThriftMaterialListArgs)  ReadField1(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(); err != nil {
+  return thrift.PrependError("error reading field 1: ", err)
+} else {
+  p.Types = v
+}
+  return nil
+}
+
+func (p *WxServiceThriftMaterialListArgs)  ReadField2(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI64(); err != nil {
+  return thrift.PrependError("error reading field 2: ", err)
+} else {
+  p.Page = v
+}
+  return nil
+}
+
+func (p *WxServiceThriftMaterialListArgs)  ReadField3(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI64(); err != nil {
+  return thrift.PrependError("error reading field 3: ", err)
+} else {
+  p.PageSize = v
+}
+  return nil
+}
+
 func (p *WxServiceThriftMaterialListArgs) Write(oprot thrift.TProtocol) error {
   if err := oprot.WriteStructBegin("MaterialList_args"); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
   if p != nil {
+    if err := p.writeField1(oprot); err != nil { return err }
+    if err := p.writeField2(oprot); err != nil { return err }
+    if err := p.writeField3(oprot); err != nil { return err }
   }
   if err := oprot.WriteFieldStop(); err != nil {
     return thrift.PrependError("write field stop error: ", err) }
   if err := oprot.WriteStructEnd(); err != nil {
     return thrift.PrependError("write struct stop error: ", err) }
   return nil
+}
+
+func (p *WxServiceThriftMaterialListArgs) writeField1(oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin("types", thrift.STRING, 1); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:types: ", p), err) }
+  if err := oprot.WriteString(string(p.Types)); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.types (1) field write error: ", p), err) }
+  if err := oprot.WriteFieldEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 1:types: ", p), err) }
+  return err
+}
+
+func (p *WxServiceThriftMaterialListArgs) writeField2(oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin("page", thrift.I64, 2); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:page: ", p), err) }
+  if err := oprot.WriteI64(int64(p.Page)); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.page (2) field write error: ", p), err) }
+  if err := oprot.WriteFieldEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 2:page: ", p), err) }
+  return err
+}
+
+func (p *WxServiceThriftMaterialListArgs) writeField3(oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin("pageSize", thrift.I64, 3); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:pageSize: ", p), err) }
+  if err := oprot.WriteI64(int64(p.PageSize)); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.pageSize (3) field write error: ", p), err) }
+  if err := oprot.WriteFieldEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 3:pageSize: ", p), err) }
+  return err
 }
 
 func (p *WxServiceThriftMaterialListArgs) String() string {

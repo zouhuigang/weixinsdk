@@ -42,7 +42,7 @@ func Usage() {
   fmt.Fprintln(os.Stderr, "  WXPayNotify WxpayParseAndVerifySign(string xmlBytes)")
   fmt.Fprintln(os.Stderr, "  QrRespone QrcodeShow(string qrJsonBytes)")
   fmt.Fprintln(os.Stderr, "  MaCount MaterialCount()")
-  fmt.Fprintln(os.Stderr, "  Res MaterialList()")
+  fmt.Fprintln(os.Stderr, "  Res MaterialList(string types, i64 page, i64 pageSize)")
   fmt.Fprintln(os.Stderr, "  WxImage UpImage(string utype, string filename)")
   fmt.Fprintln(os.Stderr, "  string getAutoReplyXml(AutoReplyData text)")
   fmt.Fprintln(os.Stderr, "  KefuData KefuSend(string messageJsonBytes)")
@@ -462,11 +462,25 @@ func main() {
     fmt.Print("\n")
     break
   case "MaterialList":
-    if flag.NArg() - 1 != 0 {
-      fmt.Fprintln(os.Stderr, "MaterialList requires 0 args")
+    if flag.NArg() - 1 != 3 {
+      fmt.Fprintln(os.Stderr, "MaterialList requires 3 args")
       flag.Usage()
     }
-    fmt.Print(client.MaterialList())
+    argvalue0 := flag.Arg(1)
+    value0 := argvalue0
+    argvalue1, err115 := (strconv.ParseInt(flag.Arg(2), 10, 64))
+    if err115 != nil {
+      Usage()
+      return
+    }
+    value1 := argvalue1
+    argvalue2, err116 := (strconv.ParseInt(flag.Arg(3), 10, 64))
+    if err116 != nil {
+      Usage()
+      return
+    }
+    value2 := argvalue2
+    fmt.Print(client.MaterialList(value0, value1, value2))
     fmt.Print("\n")
     break
   case "UpImage":
@@ -486,19 +500,19 @@ func main() {
       fmt.Fprintln(os.Stderr, "GetAutoReplyXml requires 1 args")
       flag.Usage()
     }
-    arg116 := flag.Arg(1)
-    mbTrans117 := thrift.NewTMemoryBufferLen(len(arg116))
-    defer mbTrans117.Close()
-    _, err118 := mbTrans117.WriteString(arg116)
-    if err118 != nil {
+    arg119 := flag.Arg(1)
+    mbTrans120 := thrift.NewTMemoryBufferLen(len(arg119))
+    defer mbTrans120.Close()
+    _, err121 := mbTrans120.WriteString(arg119)
+    if err121 != nil {
       Usage()
       return
     }
-    factory119 := thrift.NewTSimpleJSONProtocolFactory()
-    jsProt120 := factory119.GetProtocol(mbTrans117)
+    factory122 := thrift.NewTSimpleJSONProtocolFactory()
+    jsProt123 := factory122.GetProtocol(mbTrans120)
     argvalue0 := service.NewAutoReplyData()
-    err121 := argvalue0.Read(jsProt120)
-    if err121 != nil {
+    err124 := argvalue0.Read(jsProt123)
+    if err124 != nil {
       Usage()
       return
     }

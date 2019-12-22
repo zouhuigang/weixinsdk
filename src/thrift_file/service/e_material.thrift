@@ -12,15 +12,15 @@ struct Item{
 }
 
 struct Res{
-	1: string total_count,
-	2: string item_count,
+	1:i64 total_count,
+	2:i64 item_count,
 	3:list<Item> item,
 }
 
 struct WxParm{
 	1:string type,
-	2:i32 offset,
-	3:i32 count,
+	2:i64 offset,
+	3:i64 count,
 }
 
 struct MaCount{

@@ -194,8 +194,8 @@ func (p *Item) String() string {
 //  - ItemCount
 //  - Item
 type Res struct {
-  TotalCount string `thrift:"total_count,1" db:"total_count" json:"total_count"`
-  ItemCount string `thrift:"item_count,2" db:"item_count" json:"item_count"`
+  TotalCount int64 `thrift:"total_count,1" db:"total_count" json:"total_count"`
+  ItemCount int64 `thrift:"item_count,2" db:"item_count" json:"item_count"`
   Item []*Item `thrift:"item,3" db:"item" json:"item"`
 }
 
@@ -204,11 +204,11 @@ func NewRes() *Res {
 }
 
 
-func (p *Res) GetTotalCount() string {
+func (p *Res) GetTotalCount() int64 {
   return p.TotalCount
 }
 
-func (p *Res) GetItemCount() string {
+func (p *Res) GetItemCount() int64 {
   return p.ItemCount
 }
 
@@ -256,7 +256,7 @@ func (p *Res) Read(iprot thrift.TProtocol) error {
 }
 
 func (p *Res)  ReadField1(iprot thrift.TProtocol) error {
-  if v, err := iprot.ReadString(); err != nil {
+  if v, err := iprot.ReadI64(); err != nil {
   return thrift.PrependError("error reading field 1: ", err)
 } else {
   p.TotalCount = v
@@ -265,7 +265,7 @@ func (p *Res)  ReadField1(iprot thrift.TProtocol) error {
 }
 
 func (p *Res)  ReadField2(iprot thrift.TProtocol) error {
-  if v, err := iprot.ReadString(); err != nil {
+  if v, err := iprot.ReadI64(); err != nil {
   return thrift.PrependError("error reading field 2: ", err)
 } else {
   p.ItemCount = v
@@ -309,9 +309,9 @@ func (p *Res) Write(oprot thrift.TProtocol) error {
 }
 
 func (p *Res) writeField1(oprot thrift.TProtocol) (err error) {
-  if err := oprot.WriteFieldBegin("total_count", thrift.STRING, 1); err != nil {
+  if err := oprot.WriteFieldBegin("total_count", thrift.I64, 1); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:total_count: ", p), err) }
-  if err := oprot.WriteString(string(p.TotalCount)); err != nil {
+  if err := oprot.WriteI64(int64(p.TotalCount)); err != nil {
   return thrift.PrependError(fmt.Sprintf("%T.total_count (1) field write error: ", p), err) }
   if err := oprot.WriteFieldEnd(); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T write field end error 1:total_count: ", p), err) }
@@ -319,9 +319,9 @@ func (p *Res) writeField1(oprot thrift.TProtocol) (err error) {
 }
 
 func (p *Res) writeField2(oprot thrift.TProtocol) (err error) {
-  if err := oprot.WriteFieldBegin("item_count", thrift.STRING, 2); err != nil {
+  if err := oprot.WriteFieldBegin("item_count", thrift.I64, 2); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:item_count: ", p), err) }
-  if err := oprot.WriteString(string(p.ItemCount)); err != nil {
+  if err := oprot.WriteI64(int64(p.ItemCount)); err != nil {
   return thrift.PrependError(fmt.Sprintf("%T.item_count (2) field write error: ", p), err) }
   if err := oprot.WriteFieldEnd(); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T write field end error 2:item_count: ", p), err) }
@@ -360,8 +360,8 @@ func (p *Res) String() string {
 //  - Count
 type WxParm struct {
   Type string `thrift:"type,1" db:"type" json:"type"`
-  Offset int32 `thrift:"offset,2" db:"offset" json:"offset"`
-  Count int32 `thrift:"count,3" db:"count" json:"count"`
+  Offset int64 `thrift:"offset,2" db:"offset" json:"offset"`
+  Count int64 `thrift:"count,3" db:"count" json:"count"`
 }
 
 func NewWxParm() *WxParm {
@@ -373,11 +373,11 @@ func (p *WxParm) GetType() string {
   return p.Type
 }
 
-func (p *WxParm) GetOffset() int32 {
+func (p *WxParm) GetOffset() int64 {
   return p.Offset
 }
 
-func (p *WxParm) GetCount() int32 {
+func (p *WxParm) GetCount() int64 {
   return p.Count
 }
 func (p *WxParm) Read(iprot thrift.TProtocol) error {
@@ -430,7 +430,7 @@ func (p *WxParm)  ReadField1(iprot thrift.TProtocol) error {
 }
 
 func (p *WxParm)  ReadField2(iprot thrift.TProtocol) error {
-  if v, err := iprot.ReadI32(); err != nil {
+  if v, err := iprot.ReadI64(); err != nil {
   return thrift.PrependError("error reading field 2: ", err)
 } else {
   p.Offset = v
@@ -439,7 +439,7 @@ func (p *WxParm)  ReadField2(iprot thrift.TProtocol) error {
 }
 
 func (p *WxParm)  ReadField3(iprot thrift.TProtocol) error {
-  if v, err := iprot.ReadI32(); err != nil {
+  if v, err := iprot.ReadI64(); err != nil {
   return thrift.PrependError("error reading field 3: ", err)
 } else {
   p.Count = v
@@ -473,9 +473,9 @@ func (p *WxParm) writeField1(oprot thrift.TProtocol) (err error) {
 }
 
 func (p *WxParm) writeField2(oprot thrift.TProtocol) (err error) {
-  if err := oprot.WriteFieldBegin("offset", thrift.I32, 2); err != nil {
+  if err := oprot.WriteFieldBegin("offset", thrift.I64, 2); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:offset: ", p), err) }
-  if err := oprot.WriteI32(int32(p.Offset)); err != nil {
+  if err := oprot.WriteI64(int64(p.Offset)); err != nil {
   return thrift.PrependError(fmt.Sprintf("%T.offset (2) field write error: ", p), err) }
   if err := oprot.WriteFieldEnd(); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T write field end error 2:offset: ", p), err) }
@@ -483,9 +483,9 @@ func (p *WxParm) writeField2(oprot thrift.TProtocol) (err error) {
 }
 
 func (p *WxParm) writeField3(oprot thrift.TProtocol) (err error) {
-  if err := oprot.WriteFieldBegin("count", thrift.I32, 3); err != nil {
+  if err := oprot.WriteFieldBegin("count", thrift.I64, 3); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:count: ", p), err) }
-  if err := oprot.WriteI32(int32(p.Count)); err != nil {
+  if err := oprot.WriteI64(int64(p.Count)); err != nil {
   return thrift.PrependError(fmt.Sprintf("%T.count (3) field write error: ", p), err) }
   if err := oprot.WriteFieldEnd(); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T write field end error 3:count: ", p), err) }

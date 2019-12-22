@@ -32,17 +32,25 @@ func (this *WxServiceThrift) MaterialCount() (*z_weixin_service.MaCount, error) 
 }
 
 /*素材列表*/
-func (this *WxServiceThrift) MaterialList() (*z_weixin_service.Res, error) {
+func (this *WxServiceThrift) MaterialList(types string, page int64, pageSize int64) (*z_weixin_service.Res, error) {
 	response := new(z_weixin_service.Res)
 	access_token, err := zcache.GetAccessToken()
 	if err != nil {
 		return nil, err
 	}
 
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 15
+	}
+
+	offset := (page - 1) * pageSize
 	parm := new(z_weixin_service.WxParm)
-	parm.Type = "image"
-	parm.Offset = 0
-	parm.Count = 20
+	parm.Type = types
+	parm.Offset = offset
+	parm.Count = pageSize
 	jsonBytes, err := json.Marshal(parm)
 	if err != nil {
 		return nil, err
