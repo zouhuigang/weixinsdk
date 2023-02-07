@@ -1,5 +1,23 @@
 ### 微信sdk
 
+### 本地开发调试
+
+测试账号申请:
+https://mp.weixin.qq.com/debug/cgi-bin/sandboxinfo?action=showinfo&t=sandbox/index
+
+```
+  # 随便找一台服务器
+  $ wget https://github.com/zouhuigang/weixinsdk/releases/download/1.0.0/weixinsdk-1.0.0-1.x86_64.rpm
+  $ yum localinstall -y weixinsdk-1.0.0-1.x86_64.rpm
+```
+# 修改配置
+  ```
+  $ vi /usr/local/software/weixinsdk/build/base.env.ini
+  systemctl start weixinsdk
+  ````
+ 
+ <img width="699" alt="image" src="https://user-images.githubusercontent.com/15059874/217156884-0be3321a-3fe9-4f7b-bc8d-6a504f08f914.png">
+
 ### 效果图
 
 ![image](./doc/20191221220628.jpg)
