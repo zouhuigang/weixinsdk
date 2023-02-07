@@ -9,6 +9,7 @@ https://mp.weixin.qq.com/debug/cgi-bin/sandboxinfo?action=showinfo&t=sandbox/ind
   # 随便找一台服务器
   $ wget https://github.com/zouhuigang/weixinsdk/releases/download/1.0.0/weixinsdk-1.0.0-1.x86_64.rpm
   $ yum localinstall -y weixinsdk-1.0.0-1.x86_64.rpm
+  $ chmod +x /usr/local/software/weixinsdk/weixinsdk
 ```
 # 修改配置
   ```
